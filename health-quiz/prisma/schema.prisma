@@ -1,0 +1,146 @@
+// Health assessment quiz — data model
+//
+// User 1—N QuizSession 1—N QuizAnswer
+//                      1—1 Assessment
+// User 1—1 Subscription 1—N Payment
+//
+// A "user" here is an anonymous identity minted on first visit. Sessions
+// (one funnel walkthrough each) hang off the user so a returning user can
+// retake the quiz while keeping one subscription.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  createdAt    DateTime      @default(now()) @map("created_at")
+  sessions     QuizSession[]
+  subscription Subscription?
+  payments     Payment[]
+
+  @@map("users")
+}
+
+enum SessionStatus {
+  IN_PROGRESS
+  SUBMITTED
+}
+
+model QuizSession {
+  id          String        @id @default(cuid())
+  userId      String        @map("user_id")
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      SessionStatus @default(IN_PROGRESS)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  submittedAt DateTime?     @map("submitted_at")
+  answers     QuizAnswer[]
+  assessment  Assessment?
+
+  @@index([userId])
+  @@map("quiz_sessions")
+}
+
+// One row per answered step. `@@unique([sessionId, stepKey])` makes step
+// saves idempotent upserts: duplicate and out-of-order submissions converge
+// to one row, and `revision` records how many times the step was rewritten.
+model QuizAnswer {
+  id        String      @id @default(cuid())
+  sessionId String      @map("session_id")
+  session   QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  stepKey   String      @map("step_key")
+  payload   Json
+  revision  Int         @default(1)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  @@unique([sessionId, stepKey])
+  @@map("quiz_answers")
+}
+
+enum BmiCategory {
+  UNDERWEIGHT
+  NORMAL
+  OVERWEIGHT
+  OBESE
+}
+
+// Server-computed result, persisted at submit time. `algorithmVersion` lets
+// us re-run newer formulas later without ambiguity about how a row was made.
+model Assessment {
+  id                  String      @id @default(cuid())
+  sessionId           String      @unique @map("session_id")
+  session             QuizSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  bmi                 Decimal     @db.Decimal(5, 2)
+  bmiCategory         BmiCategory @map("bmi_category")
+  bmr                 Int
+  tdee                Int
+  recommendedCalories Int         @map("recommended_calories")
+  proteinG            Int         @map("protein_g")
+  carbsG              Int         @map("carbs_g")
+  fatG                Int         @map("fat_g")
+  weeklyChangeKg      Decimal     @map("weekly_change_kg") @db.Decimal(4, 2)
+  targetDate          DateTime    @map("target_date") @db.Date
+  projection          Json // [{week, date, weightKg}] — premium-only field
+  algorithmVersion    Int         @default(1) @map("algorithm_version")
+  createdAt           DateTime    @default(now()) @map("created_at")
+
+  @@map("assessments")
+}
+
+enum SubscriptionStatus {
+  FREE
+  ACTIVE
+  CANCELED
+}
+
+enum PlanType {
+  MONTHLY
+  YEARLY
+}
+
+model Subscription {
+  id          String             @id @default(cuid())
+  userId      String             @unique @map("user_id")
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      SubscriptionStatus @default(FREE)
+  plan        PlanType?
+  activatedAt DateTime?          @map("activated_at")
+  expiresAt   DateTime?          @map("expires_at")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+  payments    Payment[]
+
+  @@map("subscriptions")
+}
+
+enum PaymentStatus {
+  SUCCEEDED
+  FAILED
+}
+
+// Ledger of (mock) payment-provider callbacks. `idempotencyKey` is unique so
+// a replayed /pay webhook records nothing twice and returns the same result.
+model Payment {
+  id             String        @id @default(cuid())
+  userId         String        @map("user_id")
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionId String?       @map("subscription_id")
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  provider       String        @default("mock")
+  idempotencyKey String        @unique @map("idempotency_key")
+  amountCents    Int           @map("amount_cents")
+  currency       String        @default("CNY")
+  plan           PlanType
+  status         PaymentStatus @default(SUCCEEDED)
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("payments")
+}
