@@ -290,16 +290,15 @@ erDiagram
 
 ## 部署到公网
 
-任何 Node 平台皆可,推荐 **Vercel + Supabase/Neon**(免费档足够演示):
+仓库已内置零配置部署:`vercel-build` 脚本会在 Vercel 构建时自动执行 **迁移(migrate deploy)→ 种子(demo-paid-0001 / demo-free-0001)→ 构建**;Prisma 客户端会自动识别 Neon 池化连接串并追加 `pgbouncer=true`。在 Vercel 控制台只需三步:
 
-1. 在 [Supabase](https://supabase.com) / [Neon](https://neon.tech) 建一个 Postgres,拿到连接串。
-2. Vercel 导入本仓库,**Root Directory 选 `health-quiz`**,环境变量设 `DATABASE_URL`。
-3. 首次部署前在本地对线上库执行:
-   ```bash
-   DATABASE_URL="<线上连接串>" npx prisma migrate deploy
-   DATABASE_URL="<线上连接串>" npm run db:seed   # 预置 demo-paid-0001 / demo-free-0001
-   ```
-4. 部署完成后,README 顶部替换为线上 URL,即可在线上跑通 funnel + 模拟支付全流程。
+1. **导入**:[vercel.com/new](https://vercel.com/new) → Import `ihoooohi/FlowCE` → **Root Directory 点 Edit 填 `health-quiz`** → Deploy。
+   (若代码尚未合入默认分支,这次构建会失败 —— 正常,继续第 2 步)
+2. **切生产分支**(仅当代码不在默认分支时):Project → Settings → Git → Production Branch 填 `claude/health-assessment-backend-gixwqs` → Save。
+3. **建数据库**:Project → Storage → Create Database → **Neon**(Free 档)→ Create & Connect(自动注入 `DATABASE_URL` / `DATABASE_URL_UNPOOLED`,迁移和种子用非池化连接,运行时用池化连接)。
+
+之后任意一次 push(或 Deployments → Redeploy)即产出可用环境。部署完成后可手动触发
+[`health-quiz-smoke.yml`](../.github/workflows/health-quiz-smoke.yml)(Actions → *health-quiz smoke test* → Run workflow,填线上 URL),它会在 CI 里对线上环境完整跑一遍「建会话 → 分步保存 → 进度恢复 → 非法输入拦截 → 提交 → 脱敏 → /pay → 完整 → 种子会话对比」。
 
 ## AI 使用复盘
 

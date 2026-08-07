@@ -1,0 +1,68 @@
+name: health-quiz smoke test (deployed URL)
+
+# Runs the full funnel + mock-payment flow against a deployed instance.
+# Trigger manually (workflow_dispatch) with the base URL of the deployment.
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Deployed base URL, e.g. https://health-quiz-xxx.vercel.app"
+        required: true
+        type: string
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Full funnel + pay flow
+        env:
+          BASE: ${{ inputs.base_url }}
+        run: |
+          set -euo pipefail
+          fail() { echo "::error::$1"; exit 1; }
+
+          echo "== health =="
+          curl -sf "$BASE/api/v1/health" | jq -e '.data.database == "up"' > /dev/null || fail "health check failed"
+
+          echo "== create session =="
+          SID=$(curl -sf -X POST "$BASE/api/v1/sessions" | jq -r '.data.sessionId')
+          [ -n "$SID" ] && [ "$SID" != "null" ] || fail "session creation failed"
+          echo "sessionId: $SID"
+
+          echo "== step saves =="
+          curl -sf -X PUT "$BASE/api/v1/sessions/$SID/answers/gender"   -H 'content-type: application/json' -d '{"gender":"male"}' > /dev/null
+          curl -sf -X PUT "$BASE/api/v1/sessions/$SID/answers/goal"     -H 'content-type: application/json' -d '{"goal":"lose_weight"}' > /dev/null
+          curl -sf -X PUT "$BASE/api/v1/sessions/$SID/answers/body"     -H 'content-type: application/json' -d '{"age":34,"heightCm":178,"weightKg":88,"targetWeightKg":78}' > /dev/null
+          curl -sf -X PUT "$BASE/api/v1/sessions/$SID/answers/activity" -H 'content-type: application/json' -d '{"activityLevel":"moderate"}' > /dev/null
+
+          echo "== progress recovery =="
+          curl -sf "$BASE/api/v1/sessions/$SID" | jq -e '.data.completedSteps | length == 4' > /dev/null || fail "progress recovery failed"
+
+          echo "== validation guard (bad payload must be 422) =="
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -X PUT "$BASE/api/v1/sessions/$SID/answers/body" -H 'content-type: application/json' -d '{"age":12,"heightCm":400,"weightKg":-1,"targetWeightKg":58}')
+          [ "$CODE" = "422" ] || fail "expected 422 for invalid body, got $CODE"
+
+          echo "== submit =="
+          curl -sf -X POST "$BASE/api/v1/sessions/$SID/submit" | jq -e '.data.status == "SUBMITTED"' > /dev/null || fail "submit failed"
+
+          echo "== result before pay: masked =="
+          FREE=$(curl -sf "$BASE/api/v1/sessions/$SID/result")
+          echo "$FREE" | jq -e '.data.tier == "free"' > /dev/null || fail "expected free tier"
+          echo "$FREE" | jq -e '.data.plan == null' > /dev/null || fail "free tier must not contain plan"
+
+          echo "== mock pay =="
+          curl -sf -X POST "$BASE/api/v1/pay" -H 'content-type: application/json' \
+            -d "{\"sessionId\":\"$SID\",\"plan\":\"MONTHLY\",\"idempotencyKey\":\"smoke-$GITHUB_RUN_ID\"}" \
+            | jq -e '.data.subscription.status == "ACTIVE"' > /dev/null || fail "pay failed"
+
+          echo "== result after pay: full =="
+          PREMIUM=$(curl -sf "$BASE/api/v1/sessions/$SID/result")
+          echo "$PREMIUM" | jq -e '.data.tier == "premium"' > /dev/null || fail "expected premium tier"
+          echo "$PREMIUM" | jq -e '.data.plan.projection | length > 2' > /dev/null || fail "projection missing after pay"
+
+          echo "== seeded demo sessions =="
+          curl -sf "$BASE/api/v1/sessions/demo-paid-0001/result" | jq -e '.data.tier == "premium"' > /dev/null || fail "demo-paid-0001 not premium"
+          curl -sf "$BASE/api/v1/sessions/demo-free-0001/result" | jq -e '.data.tier == "free"' > /dev/null || fail "demo-free-0001 not free"
+
+          echo "✅ smoke test passed: $BASE"
