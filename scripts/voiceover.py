@@ -5,14 +5,16 @@
 
 用法：
   python3 -I scripts/voiceover.py check               按估算语速检查每句会不会压到下一句（不调用 API）
+  python3 -I scripts/voiceover.py ping                检查网络与密钥是否可用（不计费）
   python3 -I scripts/voiceover.py voices              列出账号可用的系统音色
   python3 -I scripts/voiceover.py samples [音色...]   用同一句话给几个音色各生成一段试听 → out/voice-samples/
   python3 -I scripts/voiceover.py generate [--force]  逐句合成（有缓存，文本或音色不变就不重复计费）
   python3 -I scripts/voiceover.py import <目录>       用你自己的录音：目录里按句子 id 命名（01-peak.wav …）
   可选参数 --slug=tech-cycles
 
-环境变量：MINIMAX_API_KEY（必填）；MINIMAX_API_HOST，默认 https://api.minimaxi.com，
-国际站账号用 https://api.minimax.io（key 和 host 必须同一个站点）。
+环境变量：MINIMAX_API_KEY（若以"网络密钥"方式由代理注入则可不设）；MINIMAX_API_HOST，
+默认 https://api.minimaxi.com，国际站账号用 https://api.minimax.io（key 和 host 必须同一个站点）。
+narration.json 里的音色在账号上不存在时，generate 会按 PREFERRED_VOICES 自动换一个可用的并写回。
 
 合成或导入之后运行 npm run audio：配乐会在旁白处自动让位，并输出混音 mix.m4a。
 """
@@ -42,6 +44,18 @@ CHARS_PER_SEC = 4.5  # 估算用的中文语速
 GAP = 0.15  # 两句之间至少留的空隙（秒）
 
 SAMPLE_TEXT = "如果那天买入，要等多久才能回本？十五年。而这十五年，正是互联网改变世界的十五年。"
+# 纪录片 / 财经解说优先的音色顺序（generate 时配置的音色不可用就依次尝试）
+PREFERRED_VOICES = [
+    "Chinese (Mandarin)_Reliable_Executive",
+    "Chinese (Mandarin)_Gentleman",
+    "Chinese (Mandarin)_News_Anchor",
+    "presenter_male",
+    "audiobook_male_1",
+    "audiobook_male_2",
+    "male-qn-jingying",
+]
+MODELS = ["speech-2.8-hd", "speech-2.6-hd", "speech-02-hd"]
+
 SAMPLE_VOICES = [
     "audiobook_male_1",
     "audiobook_male_2",
@@ -115,30 +129,45 @@ def report(items: list[dict], total_sec: float) -> int:
 # MiniMax
 
 
+class MiniMaxError(Exception):
+    pass
+
+
+HINTS = {
+    1004: "API key 无效，或 key 与 host 不是同一个站点（国内站 api.minimaxi.com / 国际站 api.minimax.io）",
+    1008: "账户余额不足，请在开放平台充值",
+    2038: "需要先在开放平台完成实名认证",
+}
+
+
 def minimax(path: str, payload: dict) -> dict:
     key = os.environ.get("MINIMAX_API_KEY")
-    if not key:
-        sys.exit("缺少环境变量 MINIMAX_API_KEY（在云端环境设置里添加，新会话生效）。")
     host = os.environ.get("MINIMAX_API_HOST", "https://api.minimaxi.com").rstrip("/")
-    req = urllib.request.Request(
-        host + path,
-        data=json.dumps(payload).encode(),
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-        method="POST",
-    )
+    headers = {"Content-Type": "application/json"}
+    if key:
+        headers["Authorization"] = f"Bearer {key}"
+    req = urllib.request.Request(host + path, data=json.dumps(payload).encode(), headers=headers, method="POST")
     try:
         with urllib.request.urlopen(req, timeout=120) as r:
             data = json.loads(r.read())
     except urllib.error.HTTPError as e:
-        sys.exit(f"MiniMax HTTP {e.code}: {e.read()[:300]!r}")
+        raise MiniMaxError(f"HTTP {e.code}: {e.read()[:300]!r}" + ("" if key else "（未设置 MINIMAX_API_KEY）"))
     except urllib.error.URLError as e:
-        sys.exit(f"连不上 {host}：{e.reason}（检查网络放行与 MINIMAX_API_HOST）")
+        raise MiniMaxError(f"连不上 {host}：{e.reason}。请在云端环境设置里放行该域名（新会话生效）")
     base = data.get("base_resp", {})
     code = base.get("status_code", 0)
     if code != 0:
-        hint = {1004: "API key 与 host 不匹配或无效", 2038: "需要先在开放平台完成实名认证"}.get(code, "")
-        sys.exit(f"MiniMax 错误 {code}: {base.get('status_msg')} {hint}")
+        raise MiniMaxError(f"错误 {code}: {base.get('status_msg')}  {HINTS.get(code, '')}".rstrip())
     return data
+
+
+def system_voices() -> dict[str, str]:
+    data = minimax("/v1/get_voice", {"voice_type": "all"})
+    out = {}
+    for group in ("system_voice", "voice_cloning", "voice_generation"):
+        for v in data.get(group) or []:
+            out[v.get("voice_id")] = v.get("voice_name") or ""
+    return out
 
 
 def synth(text: str, voice: dict) -> bytes:
@@ -159,7 +188,7 @@ def synth(text: str, voice: dict) -> bytes:
     data = minimax("/v1/t2a_v2", payload)
     audio = (data.get("data") or {}).get("audio")
     if not audio:
-        sys.exit(f"返回里没有音频：{json.dumps(data)[:300]}")
+        raise MiniMaxError(f"返回里没有音频：{json.dumps(data)[:300]}")
     return bytes.fromhex(audio)
 
 
@@ -233,20 +262,61 @@ def cmd_check() -> None:
     print(f"\n共 {len(items)} 句、{chars} 字；估计有 {problems} 处需要调整。")
 
 
+def cmd_ping() -> None:
+    host = os.environ.get("MINIMAX_API_HOST", "https://api.minimaxi.com")
+    print(f"host: {host}  key: {'已设置' if os.environ.get('MINIMAX_API_KEY') else '未设置（若用网络密钥注入可忽略）'}")
+    voices = system_voices()
+    print(f"OK：账号可用音色 {len(voices)} 个")
+
+
 def cmd_voices() -> None:
-    data = minimax("/v1/get_voice", {"voice_type": "system"})
-    for v in data.get("system_voice") or []:
-        print(f"{v.get('voice_id'):<48} {v.get('voice_name')}  {', '.join(v.get('description') or [])}")
+    for vid, name in system_voices().items():
+        print(f"{vid:<48} {name}")
+
+
+def resolve_voice(nar: dict) -> dict:
+    """确认音色与模型在账号上可用；不可用就按偏好顺序替换，并写回 narration.json"""
+    voice = dict(nar["voice"])
+    want = os.environ.get("MINIMAX_VOICE_ID") or voice["voice_id"]
+    available = system_voices()
+    if want not in available:
+        pick = next((v for v in PREFERRED_VOICES if v in available), None)
+        if not pick:
+            raise MiniMaxError(f"音色 {want} 不可用，偏好列表里的也都没有；运行 voices 查看后改 narration.json")
+        print(f"音色 {want} 不可用，改用 {pick}（{available[pick]}）")
+        want = pick
+    voice["voice_id"] = want
+    # 模型：从配置的开始，依次试到能用为止
+    models = [voice["model"]] + [m for m in MODELS if m != voice["model"]]
+    for m in models:
+        try:
+            synth("测试。", {**voice, "model": m})
+            voice["model"] = m
+            break
+        except MiniMaxError as e:
+            print(f"模型 {m} 不可用：{e}")
+    else:
+        raise MiniMaxError("没有可用的语音模型")
+    if voice != nar["voice"]:
+        nar["voice"] = voice
+        NARRATION.write_text(json.dumps(nar, ensure_ascii=False, indent=2) + "\n")
+        print(f"已写回 narration.json：{voice['model']} · {voice['voice_id']}")
+    return voice
 
 
 def cmd_samples() -> None:
     voice = load_json(NARRATION)["voice"]
     out = ROOT / "out/voice-samples"
     out.mkdir(parents=True, exist_ok=True)
-    for vid in ARGS[1:] or SAMPLE_VOICES:
+    wanted = ARGS[1:]
+    if not wanted:
+        available = system_voices()
+        wanted = [v for v in PREFERRED_VOICES + SAMPLE_VOICES if v in available]
+        wanted = list(dict.fromkeys(wanted))[:6]
+    for vid in wanted:
         try:
             audio = synth(SAMPLE_TEXT, {**voice, "voice_id": vid})
-        except SystemExit as e:
+        except MiniMaxError as e:
             print(f"{vid}: 失败 {e}")
             continue
         p = out / f"{vid.replace(' ', '_').replace('(', '').replace(')', '')}.mp3"
@@ -256,7 +326,7 @@ def cmd_samples() -> None:
 
 def cmd_generate() -> None:
     nar = load_json(NARRATION)
-    voice = nar["voice"]
+    voice = resolve_voice(nar)
     old = {l["id"]: l for l in load_json(MANIFEST).get("lines", [])} if MANIFEST.exists() else {}
     VO_DIR.mkdir(parents=True, exist_ok=True)
     items = []
@@ -291,9 +361,20 @@ def cmd_import() -> None:
 
 def main() -> None:
     cmd = ARGS[0] if ARGS else "check"
-    {"check": cmd_check, "voices": cmd_voices, "samples": cmd_samples, "generate": cmd_generate, "import": cmd_import}.get(
-        cmd, lambda: sys.exit(__doc__)
-    )()
+    fn = {
+        "check": cmd_check,
+        "ping": cmd_ping,
+        "voices": cmd_voices,
+        "samples": cmd_samples,
+        "generate": cmd_generate,
+        "import": cmd_import,
+    }.get(cmd)
+    if not fn:
+        sys.exit(__doc__)
+    try:
+        fn()
+    except MiniMaxError as e:
+        sys.exit(f"MiniMax：{e}")
 
 
 if __name__ == "__main__":

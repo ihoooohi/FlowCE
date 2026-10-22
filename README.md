@@ -46,11 +46,14 @@ python3 -I scripts/make_textures.py   # 胶片颗粒、雾气贴图
 1. 网络放行：把 `api.minimaxi.com` 加进 Allowed domains。国际站账号改为放行 `api.minimax.io`。
 2. 环境变量：添加 `MINIMAX_API_KEY`。国际站账号再加一个 `MINIMAX_API_HOST=https://api.minimax.io`，key 和 host 必须来自同一个站点。
 
-**生成**：
+**一键出片**：`npm run produce`（检查 → 配音 → 混音 → 横竖版渲染 → 复制到 `exports/`）。配置的音色在账号上不可用时会自动换成可用的解说类音色，并写回 `narration.json`。
+
+**分步**：
 
 ```bash
 python3 -I scripts/voiceover.py check      # 不花钱：按估算语速检查每句会不会压到下一句
-python3 -I scripts/voiceover.py voices     # 列出账号可用的系统音色
+python3 -I scripts/voiceover.py ping       # 不花钱：检查网络放行与密钥
+python3 -I scripts/voiceover.py voices     # 列出账号可用的音色
 python3 -I scripts/voiceover.py samples    # 同一句话用几个候选音色各生成一段试听 → out/voice-samples/
 # 选定音色后改 narration.json 里的 voice.voice_id，然后：
 python3 -I scripts/voiceover.py generate   # 逐句合成；有缓存，文本和音色不变就不会重复计费

@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "render:vertical": "node scripts/render.mjs TechCyclesVertical",
     "voiceover": "python3 scripts/voiceover.py generate",
-    "voiceover:check": "python3 scripts/voiceover.py check"
+    "voiceover:check": "python3 scripts/voiceover.py check",
+    "produce": "bash scripts/produce.sh"
   },
   "dependencies": {
     "@fontsource/jetbrains-mono": "5.3.0",
