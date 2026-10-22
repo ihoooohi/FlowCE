@@ -1,0 +1,103 @@
+{
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "comment": "画面与配乐共用的时间轴。dur/overlap/beats 单位都是帧（30fps）；beats 为场景内相对帧。改动后重新运行 npm run audio。",
+  "scenes": [
+    {
+      "id": "cold-open",
+      "dur": 450,
+      "overlap": 0,
+      "fadeIn": 0,
+      "fadeOut": 24,
+      "beats": { "tag": 12, "count": 40, "countEnd": 125, "label": 130, "q1": 178, "q2": 214, "impact": 290, "after": 345 }
+    },
+    {
+      "id": "title",
+      "dur": 330,
+      "overlap": 0,
+      "fadeIn": 6,
+      "fadeOut": 24,
+      "beats": { "zoomEnd": 150, "title": 172 }
+    },
+    {
+      "id": "three",
+      "dur": 420,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 15,
+      "beats": { "line": 22, "m1": 80, "m2": 128, "m3": 176, "q": 262 }
+    },
+    {
+      "id": "race",
+      "dur": 690,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 0,
+      "beats": { "drawStart": 40, "drawEnd": 520, "done": 520, "cap": 552 }
+    },
+    {
+      "id": "crash",
+      "dur": 570,
+      "overlap": 0,
+      "fadeIn": 0,
+      "fadeOut": 18,
+      "beats": { "rescale": 20, "approach": 90, "peak": 168, "crashStart": 186, "crashEnd": 330, "statement": 388 }
+    },
+    {
+      "id": "wait",
+      "dur": 960,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 18,
+      "beats": {
+        "drawStart": 50,
+        "recover": 620,
+        "milestoneYears": [4.44, 6.84, 8.52, 10.86, 14.53],
+        "g1987": 660,
+        "g1987End": 735,
+        "compare": 790,
+        "cap": 860
+      }
+    },
+    {
+      "id": "long",
+      "dur": 660,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 18,
+      "beats": {
+        "drawStart": 30,
+        "drawEnd": 330,
+        "eventYears": [1987.62, 2000.19, 2002.77, 2009.08, 2015.31, 2026.75],
+        "stat": 345,
+        "underwater": 400,
+        "swap": 500
+      }
+    },
+    {
+      "id": "ai",
+      "dur": 690,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 18,
+      "beats": { "netStart": 20, "netEnd": 150, "aiStart": 172, "aiEnd": 430, "fog": 470, "swap": 560 }
+    },
+    {
+      "id": "two",
+      "dur": 540,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 18,
+      "beats": { "a": 30, "b": 100, "mid": 190, "quote": 330 }
+    },
+    {
+      "id": "outro",
+      "dur": 540,
+      "overlap": 12,
+      "fadeIn": 12,
+      "fadeOut": 36,
+      "beats": { "cards": 30, "end": 270 }
+    }
+  ]
+}
