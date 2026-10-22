@@ -22,8 +22,11 @@ await renderMedia({
   composition,
   inputProps,
   codec: "h264",
-  crf: 18,
+  // 颗粒质感很吃码率：CRF 24 + slow 预设，3 分钟 1080p 约 30 MB，肉眼几乎无损
+  crf: Number(process.env.REMOTION_CRF ?? 24),
+  x264Preset: "slow",
   pixelFormat: "yuv420p",
+  colorSpace: "bt709",
   audioBitrate: "192k",
   outputLocation: output,
   scale,
