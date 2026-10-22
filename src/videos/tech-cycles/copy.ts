@@ -1,5 +1,6 @@
 import type { Seg } from "../../lib/components";
 import { color } from "../../lib/theme";
+import narration from "./narration.json";
 
 /**
  * 本片全部文案。改字只需要改这里；渲染前会自动预加载这些字符的字体。
@@ -79,6 +80,7 @@ export const COPY = {
     eyebrow: ["05", "拉远镜头"],
     head: "45 年：真实时间轴上的纳斯达克",
     head2: "长期向上的曲线里，也藏着长达 15 年的等待。",
+    head2V: "长期向上的曲线里，\n也藏着长达 15 年的等待。",
     eras: ["PC 革命", "互联网革命", "AI 革命"],
     events: [
       { t: "1987 股灾", sub: "" },
@@ -96,6 +98,7 @@ export const COPY = {
     eyebrow: ["06", "现在"],
     head: "互联网泡沫 vs. AI 时代",
     head2: "历史形状可以比较，但不能用来机械预测时间。",
+    head2V: "历史形状可以比较，\n但不能用来机械预测时间。",
     legend: [
       { key: "net", name: "互联网", period: "1996.01 起" },
       { key: "ai", name: "AI", period: "2022.11 起" },
@@ -129,5 +132,5 @@ export const COPY = {
   },
 };
 
-/** 收集全部文案字符，供字体预加载 */
-export const ALL_TEXT = JSON.stringify(COPY);
+/** 收集全部文案字符（含旁白字幕），供字体预加载 */
+export const ALL_TEXT = JSON.stringify(COPY) + narration.lines.map((l) => l.text).join("");

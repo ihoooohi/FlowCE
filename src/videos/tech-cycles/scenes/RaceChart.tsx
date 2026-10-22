@@ -1,10 +1,12 @@
 import React from "react";
 import { Dot, GridY, Line, TicksX, linear, partial, type Pt } from "../../../lib/chart";
+import { useLayout } from "../../../lib/layout";
 import { color, font } from "../../../lib/theme";
 import { first48, netFull } from "../data";
 
 /** Race 与 Crash 两个场景共用的图表：横轴为各自起点后的月份，纵轴为起点 = 100 */
-export const PLOT = { x0: 190, x1: 1370, top: 300, bottom: 930 } as const;
+export const plotFor = (portrait: boolean) =>
+  portrait ? { x0: 130, x1: 990, top: 600, bottom: 1150 } : { x0: 190, x1: 1370, top: 300, bottom: 930 };
 
 export type SeriesKey = "net" | "ai" | "pc";
 
@@ -36,6 +38,8 @@ export const RaceChart: React.FC<RaceState & { baseLabel: string; baseLabelOpaci
   baseLabel,
   baseLabelOpacity = 1,
 }) => {
+  const { W, H, portrait } = useLayout();
+  const PLOT = plotFor(portrait);
   const sx = linear(0, xMax, PLOT.x0, PLOT.x1);
   const sy = linear(yMin, yMax, PLOT.bottom, PLOT.top);
   const yTicks = [100, 200, 300, 400, 500].filter((v) => v <= yMax + 1);
@@ -44,7 +48,7 @@ export const RaceChart: React.FC<RaceState & { baseLabel: string; baseLabelOpaci
   const order: SeriesKey[] = ["pc", "ai", "net"];
 
   return (
-    <svg width={1920} height={1080} style={{ position: "absolute" }}>
+    <svg width={W} height={H} style={{ position: "absolute" }}>
       <defs>
         <clipPath id="race-plot">
           <rect x={PLOT.x0 - 20} y={PLOT.top - 160} width={PLOT.x1 - PLOT.x0 + 60} height={PLOT.bottom - PLOT.top + 180} />

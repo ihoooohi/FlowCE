@@ -2,8 +2,9 @@ import React from "react";
 import { AbsoluteFill, interpolate, staticFile, useCurrentFrame } from "remotion";
 import { Callout, Dot, GridY, Line, TicksX, linear, partial, type Pt } from "../../../lib/chart";
 import { Eyebrow, Reveal } from "../../../lib/components";
+import { useLayout } from "../../../lib/layout";
 import { CLAMP, ease, fade, prog } from "../../../lib/motion";
-import { SAFE, color, font } from "../../../lib/theme";
+import { color, font } from "../../../lib/theme";
 import { COPY } from "../copy";
 import { FACTS, first48, netFull } from "../data";
 import { beats } from "../timeline";
@@ -11,17 +12,17 @@ import { beats } from "../timeline";
 const B = beats<{ netStart: number; netEnd: number; aiStart: number; aiEnd: number; fog: number; swap: number }>("ai");
 const C = COPY.ai;
 
-const PLOT = { x0: 190, x1: 1460, top: 300, bottom: 920 };
-const sx = linear(0, 84, PLOT.x0, PLOT.x1);
-const sy = linear(50, 520, PLOT.bottom, PLOT.top);
 const NOW_M = first48.ai.length - 1;
-
-const NET: Pt[] = netFull.map((v, i) => ({ x: sx(i), y: sy(v) }));
-const AI: Pt[] = first48.ai.map((v, i) => ({ x: sx(i), y: sy(v) }));
 const TINT = { net: color.net, ai: color.ai } as const;
 
 export const AINow: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, H, portrait, pick, padX, top } = useLayout();
+  const PLOT = pick({ x0: 190, x1: 1460, top: 300, bottom: 920 }, { x0: 120, x1: 990, top: 620, bottom: 1150 });
+  const sx = linear(0, 84, PLOT.x0, PLOT.x1);
+  const sy = linear(50, 520, PLOT.bottom, PLOT.top);
+  const NET: Pt[] = netFull.map((v, i) => ({ x: sx(i), y: sy(v) }));
+  const AI: Pt[] = first48.ai.map((v, i) => ({ x: sx(i), y: sy(v) }));
   const netP = interpolate(frame, [B.netStart, B.netEnd], [0, NET.length - 1], { ...CLAMP, easing: ease.inOut });
   const aiP = interpolate(frame, [B.aiStart, B.aiEnd], [0, NOW_M], { ...CLAMP, easing: ease.inOut });
   const net = partial(NET, netP);
@@ -35,27 +36,36 @@ export const AINow: React.FC = () => {
 
   return (
     <AbsoluteFill>
-      <div style={{ position: "absolute", left: SAFE.x, top: SAFE.y }}>
+      <div style={{ position: "absolute", left: padX, top }}>
         <Eyebrow index={C.eyebrow[0]} label={C.eyebrow[1]} at={4} />
         <div style={{ position: "relative", marginTop: 26, height: 100 }}>
           <Reveal
             text={C.head}
             at={10}
             stagger={1.6}
-            style={{ position: "absolute", fontFamily: font.serif, fontWeight: 700, fontSize: 66, color: color.ink, opacity: swapOut, whiteSpace: "nowrap" }}
+            style={{ position: "absolute", fontFamily: font.serif, fontWeight: 700, fontSize: pick(66, 58), color: color.ink, opacity: swapOut, whiteSpace: "nowrap" }}
           />
           {frame >= B.swap && (
             <Reveal
-              text={C.head2}
+              text={portrait ? C.head2V : C.head2}
               at={B.swap + 10}
               stagger={1.4}
-              style={{ position: "absolute", fontFamily: font.serif, fontWeight: 700, fontSize: 66, color: color.ink, whiteSpace: "nowrap" }}
+              style={{
+                position: "absolute",
+                fontFamily: font.serif,
+                fontWeight: 700,
+                fontSize: pick(66, 56),
+                lineHeight: 1.35,
+                color: color.ink,
+                whiteSpace: portrait ? "normal" : "nowrap",
+                width: portrait ? W - 2 * padX : undefined,
+              }}
             />
           )}
         </div>
       </div>
 
-      <svg width={1920} height={1080} style={{ position: "absolute" }}>
+      <svg width={W} height={H} style={{ position: "absolute" }}>
         <g opacity={fade(frame, 10, 24)}>
           <GridY values={[100, 200, 300, 400, 500]} y={sy} x0={PLOT.x0} x1={PLOT.x1} strong={[100]} />
           <line x1={PLOT.x0} x2={PLOT.x1} y1={PLOT.bottom} y2={PLOT.bottom} stroke={color.dim} strokeWidth={2} />
@@ -126,24 +136,33 @@ export const AINow: React.FC = () => {
             at={B.fog + 30}
             stagger={3}
             dur={30}
-            style={{ fontFamily: font.serif, fontWeight: 700, fontSize: 58, color: color.ink, lineHeight: 1.5, textAlign: "center" }}
+            style={{ fontFamily: font.serif, fontWeight: 700, fontSize: pick(58, 46), color: color.ink, lineHeight: 1.5, textAlign: "center" }}
           />
         </div>
       </div>
 
       {/* 图例 + 前 48 个月涨幅 */}
-      <div style={{ position: "absolute", left: 1540, top: 330, width: 320 }}>
+      <div
+        style={{
+          position: "absolute",
+          left: pick(1540, padX),
+          top: pick(330, 1232),
+          width: pick(320, W - 2 * padX),
+          display: portrait ? "flex" : "block",
+          gap: 60,
+        }}
+      >
         {C.legend.map((l, i) => {
           const tint = TINT[l.key as keyof typeof TINT];
           const val = l.key === "net" ? FACTS.gain48.net : FACTS.gain48.ai;
           return (
-            <div key={l.key} style={{ marginBottom: 44, opacity: fade(frame, (i === 0 ? B.netStart : B.aiStart) - 8, 14) }}>
+            <div key={l.key} style={{ marginBottom: pick(44, 0), opacity: fade(frame, (i === 0 ? B.netStart : B.aiStart) - 8, 14) }}>
               <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
                 <span style={{ width: 30, height: 6, background: tint, borderRadius: 3, display: "inline-block" }} />
                 <span style={{ fontFamily: font.sans, fontWeight: 900, fontSize: 34, color: tint }}>{l.name}</span>
               </div>
               <div style={{ fontFamily: font.mono, fontSize: 18, color: color.muted, marginTop: 6 }}>{l.period}</div>
-              <div style={{ fontFamily: font.mono, fontWeight: 800, fontSize: 56, color: color.ink, opacity: fade(frame, B.aiEnd + 10 + i * 8, 14) }}>
+              <div style={{ fontFamily: font.mono, fontWeight: 800, fontSize: pick(56, 50), color: color.ink, opacity: fade(frame, B.aiEnd + 10 + i * 8, 14) }}>
                 +{val}%
               </div>
               <div style={{ fontFamily: font.mono, fontSize: 16, color: color.muted, opacity: fade(frame, B.aiEnd + 10 + i * 8, 14) }}>
@@ -152,7 +171,17 @@ export const AINow: React.FC = () => {
             </div>
           );
         })}
-        <div style={{ fontFamily: font.mono, fontSize: 19, color: color.accent, lineHeight: 1.6, marginTop: 40, opacity: fade(frame, B.swap + 40, 16) }}>
+        <div
+          style={{
+            fontFamily: font.mono,
+            fontSize: 19,
+            color: color.accent,
+            lineHeight: 1.6,
+            marginTop: pick(40, 4),
+            width: pick(undefined, 240),
+            opacity: fade(frame, B.swap + 40, 16),
+          }}
+        >
           {C.note}
         </div>
       </div>

@@ -9,14 +9,15 @@
 
 | 视频 | 时长 | 说明 |
 |------|------|------|
-| **市场的长镜头｜三次科技革命的股市曲线**<br>`TechCycles` · [`exports/tech-cycles.mp4`](exports/tech-cycles.mp4) | 3:12 · 1080p | 把 PC、互联网、AI 三次科技革命放进同一个镜头：技术可以长期成功，资本也可能短期定价错误。分镜见 [`materials/tech-cycles/storyboard.md`](materials/tech-cycles/storyboard.md) |
+| **市场的长镜头｜三次科技革命的股市曲线**<br>横版 `TechCycles` · [`exports/tech-cycles.mp4`](exports/tech-cycles.mp4)<br>竖版 `TechCyclesVertical` · [`exports/tech-cycles-vertical.mp4`](exports/tech-cycles-vertical.mp4) | 3:12 · 1920×1080 / 1080×1920 | 把 PC、互联网、AI 三次科技革命放进同一个镜头：技术可以长期成功，资本也可能短期定价错误。分镜见 [`materials/tech-cycles/storyboard.md`](materials/tech-cycles/storyboard.md) |
 
 ## 快速开始
 
 ```bash
 npm install
 npm run studio        # 打开 Remotion Studio，实时预览、拖时间轴
-npm run render        # 渲染成片 → out/TechCycles.mp4
+npm run render        # 渲染横版 → out/TechCycles.mp4
+npm run render:vertical   # 渲染竖版 → out/TechCyclesVertical.mp4
 ```
 
 导出静帧检查画面（比整片渲染快得多）：
@@ -36,6 +37,31 @@ npm run audio                         # 按 timeline.json 生成 public/tech-cyc
 python3 -I scripts/make_textures.py   # 胶片颗粒、雾气贴图
 ```
 
+## 旁白配音（MiniMax）
+
+旁白稿在 `src/videos/tech-cycles/narration.json`：每句写明从哪个场景的第几帧开始。`text` 同时用作字幕；`say` 是可选的读法，比如把数字写成汉字；`caption: false` 表示画面上已经有同样的文字，就不再出字幕。
+
+**一次性准备**（在 Claude Code 云端环境的设置里操作，新会话生效）：
+
+1. 网络放行：把 `api.minimaxi.com` 加进 Allowed domains。国际站账号改为放行 `api.minimax.io`。
+2. 环境变量：添加 `MINIMAX_API_KEY`。国际站账号再加一个 `MINIMAX_API_HOST=https://api.minimax.io`，key 和 host 必须来自同一个站点。
+
+**生成**：
+
+```bash
+python3 -I scripts/voiceover.py check      # 不花钱：按估算语速检查每句会不会压到下一句
+python3 -I scripts/voiceover.py voices     # 列出账号可用的系统音色
+python3 -I scripts/voiceover.py samples    # 同一句话用几个候选音色各生成一段试听 → out/voice-samples/
+# 选定音色后改 narration.json 里的 voice.voice_id，然后：
+python3 -I scripts/voiceover.py generate   # 逐句合成；有缓存，文本和音色不变就不会重复计费
+npm run audio                              # 配乐在旁白处自动让位，输出 public/tech-cycles/mix.m4a
+npm run render && npm run render:vertical
+```
+
+有了旁白之后，成片会自动改用混音；竖版会自动出字幕，横版默认不出（可加 `--props='{"captions":"on"}'`）。
+
+也可以用自己的录音：把每句存成 `<句子 id>.wav`（如 `01-peak.wav`），然后运行 `python3 -I scripts/voiceover.py import <目录>`。
+
 ## 目录
 
 ```
@@ -47,14 +73,17 @@ src/
     motion.ts              缓动、进度、噪声
     components.tsx         逐字浮现、打字机、眉标、数字标签、颗粒、暗角、抖动……
     chart.tsx              SVG 图表原语：比例尺、逐段绘制折线、网格、标注、斜线阴影
+    layout.ts              横竖版共用场景：useLayout() 给出画幅与边距
+    captions.tsx           字幕（按标点切成短句，按字数分配时长）
   videos/
     tech-cycles/           《市场的长镜头》
       copy.ts              全部文案（改字只改这里）
-      timeline.json        场景时长与节拍点（画面和配乐共用）
+      narration.json       旁白稿（配音 + 字幕）
+      timeline.json        场景时长与节拍点（画面、配乐、旁白共用）
       data.ts              数据与素材中的关键数字
-      data/                纳斯达克月度序列
+      data/                纳斯达克月度序列、旁白清单（voiceover.json，由脚本生成）
       scenes/              每个场景一个组件
-      TechCycles.tsx       串联场景 + 配乐
+      TechCycles.tsx       串联场景 + 配乐 + 字幕（横竖版共用）
 public/                    静态资源（配乐、贴图）
 materials/<视频>/          原始素材、分镜脚本
 scripts/                   渲染、静帧、配乐、数据处理脚本
@@ -70,7 +99,7 @@ exports/                   定稿成片
 5. **配乐**：复制 `scripts/make_audio.py`，改 `score()` 里的编排；节拍点从 `timeline.json` 读取，画面改了时长重跑一次即可对齐。
 6. **检查**：先用 `scripts/still.mjs` 导几帧看排版，再整片渲染；定稿复制到 `exports/`。
 
-竖版（1080×1920）只要再注册一个不同尺寸的 Composition，并为场景提供竖版排版。
+竖版（1080×1920）：在 `Root.tsx` 用同一个组件再注册一个宽高对调的 Composition，场景里用 `useLayout()` 的 `pick(横版值, 竖版值)` 给出竖版位置。竖版要给平台界面留位置：顶部约 200px、底部约 300px、右侧按钮栏。
 
 ## 关于《市场的长镜头》的数据
 
@@ -83,3 +112,4 @@ exports/                   定稿成片
 - **Remotion** 使用自有许可：个人、3 人及以下的营利组织、非营利组织可免费使用（含商用）；更大规模的营利组织需要购买 [Company License](https://www.remotion.pro/license)。
 - 字体：Noto Serif SC、Noto Sans SC、JetBrains Mono，均为 SIL Open Font License。
 - 配乐与音效由 `scripts/make_audio.py` 合成，无第三方采样。
+- 旁白如用 MiniMax 合成，请遵守 MiniMax 开放平台的服务条款。

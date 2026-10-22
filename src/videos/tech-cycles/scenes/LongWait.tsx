@@ -2,8 +2,9 @@ import React from "react";
 import { AbsoluteFill, interpolate, useCurrentFrame } from "remotion";
 import { Area, Callout, Dot, GridY, Hatch, Line, TicksX, linear, untilX, type Pt } from "../../../lib/chart";
 import { Eyebrow, NumLabel, Reveal } from "../../../lib/components";
+import { useLayout } from "../../../lib/layout";
 import { CLAMP, ease, fade, prog } from "../../../lib/motion";
-import { SAFE, color, font } from "../../../lib/theme";
+import { color, font } from "../../../lib/theme";
 import { COPY } from "../copy";
 import { FACTS, SERIES, dateToYear, decimalYear, slice } from "../data";
 import { beats } from "../timeline";
@@ -19,38 +20,38 @@ const B = beats<{
 }>("wait");
 const C = COPY.wait;
 
-const PLOT = { x0: 190, x1: 1300, top: 330, bottom: 930 };
-const sx = linear(0, 17, PLOT.x0, PLOT.x1);
-const sy = linear(0, 150, PLOT.bottom, PLOT.top);
-
 const PEAK_T = dateToYear(FACTS.peak2000.date);
 const RECOVER_X = dateToYear(FACTS.recover2015.date) - PEAK_T;
 
-/** 2000 年泡沫：以 2000-03-10 日收盘 = 100，月末点画在月底 */
-const P2000: Pt[] = [
-  { x: sx(0), y: sy(100) },
+/** 2000 年泡沫（数据坐标：x = 距高点年数，y = 以 2000-03-10 日收盘为 100），月末点画在月底 */
+const D2000: Pt[] = [
+  { x: 0, y: 100 },
   ...slice("2000-03", "2017-06").map((p) => ({
-    x: sx(decimalYear(p.m) + 1 / 12 - PEAK_T),
-    y: sy((p.v / FACTS.peak2000.close) * 100),
+    x: decimalYear(p.m) + 1 / 12 - PEAK_T,
+    y: (p.v / FACTS.peak2000.close) * 100,
   })),
 ];
-const V2000 = (x: number) => {
-  // 已画出部分在 x 处的点位（归一化值）
-  const { head } = untilX(P2000, sx(x));
-  return (PLOT.bottom - head.y) / ((PLOT.bottom - PLOT.top) / 150);
-};
+/** 曲线在第 x 年的归一化值 */
+const V2000 = (x: number) => untilX(D2000, x).head.y;
 
 /** 1987 年股灾：以 1987-08 月末 = 100 */
 const PEAK87 = SERIES.find((p) => p.m === FACTS.crash1987.peakMonth)!.v;
 const T87 = decimalYear(FACTS.crash1987.peakMonth) + 1 / 12;
-const P1987: Pt[] = slice("1987-08", "1991-03").map((p) => ({
-  x: sx(decimalYear(p.m) + 1 / 12 - T87),
-  y: sy((p.v / PEAK87) * 100),
+const D1987: Pt[] = slice("1987-08", "1991-03").map((p) => ({
+  x: decimalYear(p.m) + 1 / 12 - T87,
+  y: (p.v / PEAK87) * 100,
 }));
 const RECOVER87 = { x: decimalYear(FACTS.crash1987.recoverMonth) + 1 / 12 - T87 };
 
 export const LongWait: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, H, portrait, pick, padX, top } = useLayout();
+  const PLOT = pick({ x0: 190, x1: 1300, top: 330, bottom: 930 }, { x0: 120, x1: 990, top: 560, bottom: 1080 });
+  const sx = linear(0, 17, PLOT.x0, PLOT.x1);
+  const sy = linear(0, 150, PLOT.bottom, PLOT.top);
+  const toPx = (pts: Pt[]) => pts.map((p) => ({ x: sx(p.x), y: sy(p.y) }));
+  const P2000 = toPx(D2000);
+  const P1987 = toPx(D1987);
 
   const years =
     frame < B.recover
@@ -70,23 +71,23 @@ export const LongWait: React.FC = () => {
 
   return (
     <AbsoluteFill>
-      <div style={{ position: "absolute", left: SAFE.x, top: SAFE.y }}>
+      <div style={{ position: "absolute", left: padX, top }}>
         <Eyebrow index={C.eyebrow[0]} label={C.eyebrow[1]} at={4} />
         <Reveal
           text={C.head}
           at={10}
           stagger={1.6}
-          style={{ fontFamily: font.serif, fontWeight: 700, fontSize: 66, color: color.ink, marginTop: 26 }}
+          style={{ fontFamily: font.serif, fontWeight: 700, fontSize: pick(66, 58), color: color.ink, marginTop: 26, maxWidth: W - 2 * padX }}
         />
       </div>
 
-      <svg width={1920} height={1080} style={{ position: "absolute" }}>
+      <svg width={W} height={H} style={{ position: "absolute" }}>
         <defs>
           <Hatch id="wait-hatch" stroke={color.red} opacity={0.32} />
         </defs>
         <g opacity={fade(frame, 14, 24)}>
           <GridY values={[0, 50, 100, 150]} y={sy} x0={PLOT.x0} x1={PLOT.x1} strong={[100]} />
-          <text x={PLOT.x1} y={sy(100) - 14} textAnchor="end" fontFamily={font.mono} fontSize={19} fill={color.muted}>
+          <text x={PLOT.x1} y={sy(100) - 14} textAnchor="end" fontFamily={font.mono} fontSize={19} fill={color.muted} opacity={1 - prog(frame, B.recover - 20, 16)}>
             {C.peakLine}
           </text>
           <TicksX values={[0, 2, 4, 6, 8, 10, 12, 14, 16]} x={sx} y0={PLOT.bottom} />
@@ -152,14 +153,24 @@ export const LongWait: React.FC = () => {
         )}
       </svg>
 
-      {/* 等待时钟 + 世界在变 */}
-      <div style={{ position: "absolute", left: 1400, top: 330, width: 420, opacity: panelA }}>
+      {/* 等待时钟 + 世界在变（竖版：时钟在左、事件在右，放在图表下方） */}
+      <div style={{ position: "absolute", left: pick(1400, padX), top: pick(330, 1180), width: pick(420, W - 2 * padX), opacity: panelA }}>
         <div style={{ fontFamily: font.sans, fontSize: 24, color: color.muted, fontWeight: 500 }}>{C.clockLabel}</div>
-        <NumLabel template={C.clock} value={Math.min(years, RECOVER_X).toFixed(1)} size={96} tint={recovered ? color.pc : color.ink} />
+        <NumLabel template={C.clock} value={Math.min(years, RECOVER_X).toFixed(1)} size={pick(96, 80)} tint={recovered ? color.pc : color.ink} />
         <div style={{ fontFamily: font.mono, fontSize: 24, color: recovered ? color.pc : color.red, marginTop: 4 }}>
           {recovered ? C.recovered[1].split("，")[1] : `${C.under} −${Math.max(0, Math.round(100 - value))}%`}
         </div>
-        <div style={{ marginTop: 50, display: "flex", flexDirection: "column", gap: 18 }}>
+        <div
+          style={{
+            marginTop: pick(50, 0),
+            display: "flex",
+            flexDirection: "column",
+            gap: pick(18, 12),
+            position: portrait ? "absolute" : "static",
+            left: 470,
+            top: 0,
+          }}
+        >
           {B.milestoneYears.map((my, i) => {
             const at = B.drawStart + (my / RECOVER_X) * (B.recover - B.drawStart);
             const p = prog(frame, at, 18);
@@ -174,8 +185,8 @@ export const LongWait: React.FC = () => {
                   transform: `translateX(${(1 - p) * 30}px)`,
                 }}
               >
-                <span style={{ fontFamily: font.mono, fontSize: 22, color: color.accent, fontWeight: 700 }}>{C.milestones[i].year}</span>
-                <span style={{ fontFamily: font.sans, fontSize: 30, color: color.ink, fontWeight: 500 }}>{C.milestones[i].text}</span>
+                <span style={{ fontFamily: font.mono, fontSize: pick(22, 20), color: color.accent, fontWeight: 700 }}>{C.milestones[i].year}</span>
+                <span style={{ fontFamily: font.sans, fontSize: pick(30, 27), color: color.ink, fontWeight: 500 }}>{C.milestones[i].text}</span>
               </div>
             );
           })}
@@ -183,7 +194,7 @@ export const LongWait: React.FC = () => {
       </div>
 
       {/* 对比 */}
-      <div style={{ position: "absolute", left: 1400, top: 330, width: 420, opacity: panelB }}>
+      <div style={{ position: "absolute", left: pick(1400, padX), top: pick(330, 1180), width: pick(420, 470), opacity: panelB }}>
         {C.compare.map((c, i) => {
           const p = prog(frame, B.compare + 10 + i * 18, 40, ease.inOut);
           return (
@@ -203,7 +214,11 @@ export const LongWait: React.FC = () => {
           text={C.cap}
           at={B.cap}
           stagger={1.6}
-          style={{ fontFamily: font.sans, fontWeight: 700, fontSize: 38, color: color.ink, lineHeight: 1.5, marginTop: 30 }}
+          style={
+            portrait
+              ? { position: "absolute", left: 500, top: 0, width: 420, fontFamily: font.sans, fontWeight: 700, fontSize: 34, color: color.ink, lineHeight: 1.5 }
+              : { fontFamily: font.sans, fontWeight: 700, fontSize: 38, color: color.ink, lineHeight: 1.5, marginTop: 30 }
+          }
         />
       </div>
     </AbsoluteFill>

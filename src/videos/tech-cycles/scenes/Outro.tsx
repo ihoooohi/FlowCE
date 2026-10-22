@@ -2,7 +2,8 @@ import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
 import { Reveal } from "../../../lib/components";
 import { ease, fade, prog } from "../../../lib/motion";
-import { SAFE, color, font } from "../../../lib/theme";
+import { useLayout } from "../../../lib/layout";
+import { color, font } from "../../../lib/theme";
 import { COPY } from "../copy";
 import { beats } from "../timeline";
 
@@ -28,24 +29,41 @@ const Wordmark: React.FC<{ at: number }> = ({ at }) => {
 
 export const Outro: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, portrait, pick, padX } = useLayout();
   const cardsOut = 1 - prog(frame, B.end - 30, 24, ease.inOut);
 
   return (
     <AbsoluteFill>
       {frame < B.end && (
         <AbsoluteFill style={{ opacity: cardsOut }}>
-          <div style={{ position: "absolute", left: SAFE.x, top: 270 }}>
-            <Reveal text={C.head} at={4} stagger={1.6} style={{ fontFamily: font.serif, fontWeight: 700, fontSize: 64, color: color.ink }} />
+          <div style={{ position: "absolute", left: padX, top: pick(270, 300) }}>
+            <Reveal
+              text={C.head}
+              at={4}
+              stagger={1.6}
+              style={{ fontFamily: font.serif, fontWeight: 700, fontSize: pick(64, 54), color: color.ink, maxWidth: W - 2 * padX }}
+            />
           </div>
-          <div style={{ position: "absolute", left: SAFE.x, top: 480, display: "flex", gap: 34 }}>
+          <div
+            style={{
+              position: "absolute",
+              left: padX,
+              top: pick(480, 540),
+              display: "flex",
+              flexWrap: "wrap",
+              gap: pick(34, 40),
+              rowGap: pick(34, 70),
+              width: W - 2 * padX,
+            }}
+          >
             {C.rules.map(([n, title, desc], i) => {
               const p = prog(frame, B.cards + i * 22, 30);
               return (
-                <div key={n} style={{ width: 386, opacity: p, transform: `translateY(${(1 - p) * 40}px)` }}>
+                <div key={n} style={{ width: pick(386, 440), opacity: p, transform: `translateY(${(1 - p) * 40}px)` }}>
                   <div style={{ height: 3, width: `${100 * prog(frame, B.cards + i * 22, 40, ease.inOut)}%`, background: color.gridStrong }} />
-                  <div style={{ fontFamily: font.mono, fontSize: 24, color: color.accent, marginTop: 26, fontWeight: 700 }}>{n}</div>
-                  <div style={{ fontFamily: font.sans, fontWeight: 900, fontSize: 42, color: color.ink, marginTop: 14 }}>{title}</div>
-                  <div style={{ fontFamily: font.sans, fontWeight: 400, fontSize: 27, color: color.body, marginTop: 18, lineHeight: 1.65 }}>
+                  <div style={{ fontFamily: font.mono, fontSize: pick(24, 28), color: color.accent, marginTop: 26, fontWeight: 700 }}>{n}</div>
+                  <div style={{ fontFamily: font.sans, fontWeight: 900, fontSize: pick(42, 46), color: color.ink, marginTop: 14 }}>{title}</div>
+                  <div style={{ fontFamily: font.sans, fontWeight: 400, fontSize: pick(27, 31), color: color.body, marginTop: 18, lineHeight: 1.65 }}>
                     {desc}
                   </div>
                 </div>
@@ -56,7 +74,7 @@ export const Outro: React.FC = () => {
       )}
 
       {frame >= B.end - 4 && (
-        <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column" }}>
+        <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", paddingBottom: pick(0, 260) }}>
           <Wordmark at={B.end} />
           <div
             style={{
@@ -76,26 +94,29 @@ export const Outro: React.FC = () => {
             stagger={4}
             dur={30}
             blur={16}
-            style={{ fontFamily: font.serif, fontWeight: 900, fontSize: 124, color: color.ink, marginTop: 20, letterSpacing: "0.04em" }}
+            style={{ fontFamily: font.serif, fontWeight: 900, fontSize: pick(124, 112), color: color.ink, marginTop: 20, letterSpacing: "0.04em" }}
           />
           <Reveal
             text={C.tagline}
             at={B.end + 80}
             stagger={2}
-            style={{ fontFamily: font.serif, fontWeight: 700, fontSize: 44, color: color.body, marginTop: 40, lineHeight: 1.6, textAlign: "center" }}
+            style={{ fontFamily: font.serif, fontWeight: 700, fontSize: pick(44, 42), color: color.body, marginTop: 40, lineHeight: 1.6, textAlign: "center" }}
           />
           <div
             style={{
               position: "absolute",
-              bottom: SAFE.y,
+              bottom: pick(96, 470),
               fontFamily: font.sans,
               fontSize: 20,
               color: color.muted,
               opacity: fade(frame, B.end + 150, 24),
               letterSpacing: "0.04em",
+              textAlign: "center",
+              lineHeight: 1.8,
+              whiteSpace: "pre-line",
             }}
           >
-            {C.footer}
+            {portrait ? C.footer.split(" ｜ ").join("\n") : C.footer}
           </div>
         </AbsoluteFill>
       )}

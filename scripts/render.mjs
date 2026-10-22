@@ -1,5 +1,5 @@
 // 渲染成片。
-// 用法：node scripts/render.mjs [CompositionId] [输出路径] [--scale=0.5] [--frames=0-299]
+// 用法：node scripts/render.mjs [CompositionId] [输出路径] [--scale=0.5] [--frames=0-299] [--props='{"captions":"on"}']
 // 例：  node scripts/render.mjs TechCycles out/tech-cycles.mp4
 import path from "node:path";
 import { bundle } from "@remotion/bundler";
@@ -13,7 +13,8 @@ const frameRange = opt("frames")?.split("-").map(Number);
 
 const browserExecutable = process.env.REMOTION_BROWSER_EXECUTABLE ?? null;
 const serveUrl = await bundle({ entryPoint: path.resolve("src/index.ts") });
-const inputProps = { music: true };
+const propsArg = args.find((a) => a.startsWith("--props="));
+const inputProps = { music: true, captions: "auto", ...(propsArg ? JSON.parse(propsArg.slice(8)) : {}) };
 const composition = await selectComposition({ serveUrl, id, inputProps, browserExecutable });
 
 let last = -1;

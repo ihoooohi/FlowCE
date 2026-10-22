@@ -1,0 +1,253 @@
+{
+  "comment": "旁白稿。scene + at（场景内帧号，30fps）决定这句从哪一帧开始；text 同时用作字幕；say（可选）是交给语音合成的读法；caption: false 表示画面上已有同样的文字，不再出字幕。按约 4.5 字/秒预留了时长，生成后运行 python3 -I scripts/voiceover.py check 检查。",
+  "voice": {
+    "provider": "minimax",
+    "model": "speech-2.8-hd",
+    "voice_id": "audiobook_male_1",
+    "speed": 1.0,
+    "vol": 1.0,
+    "pitch": 0,
+    "emotion": "neutral",
+    "language_boost": "Chinese"
+  },
+  "lines": [
+    {
+      "id": "01-peak",
+      "scene": "cold-open",
+      "at": 14,
+      "text": "2000年3月10日，纳斯达克收在5048点。",
+      "say": "两千年三月十日，纳斯达克收在五千零四十八点。"
+    },
+    {
+      "id": "02-question",
+      "scene": "cold-open",
+      "at": 180,
+      "text": "如果那天买入，要等多久才能回本？",
+      "caption": false
+    },
+    {
+      "id": "03-fifteen",
+      "scene": "cold-open",
+      "at": 298,
+      "text": "十五年。",
+      "caption": false
+    },
+    {
+      "id": "04-world",
+      "scene": "cold-open",
+      "at": 340,
+      "text": "而这十五年，正是互联网改变世界的十五年。",
+      "caption": false
+    },
+    {
+      "id": "05-zoom",
+      "scene": "title",
+      "at": 40,
+      "text": "把镜头拉远，看看过去四十五年。"
+    },
+    {
+      "id": "06-three",
+      "scene": "three",
+      "at": 18,
+      "text": "过去四十五年，三次技术革命：个人电脑、互联网，还有今天的人工智能。"
+    },
+    {
+      "id": "08-same",
+      "scene": "three",
+      "at": 262,
+      "text": "它们都改变了世界。可股市曲线，长得一样吗？",
+      "caption": false
+    },
+    {
+      "id": "09-base",
+      "scene": "race",
+      "at": 20,
+      "text": "把三次革命的起点都设为一百，只看各自的前四十八个月。"
+    },
+    {
+      "id": "10-together",
+      "scene": "race",
+      "at": 210,
+      "text": "头两年，三条线几乎贴在一起。"
+    },
+    {
+      "id": "11-vertical",
+      "scene": "race",
+      "at": 380,
+      "text": "最后一年，互联网突然加速，几乎是垂直拉升。"
+    },
+    {
+      "id": "12-result",
+      "scene": "race",
+      "at": 545,
+      "text": "四十八个月，互联网涨了284%，AI是130%。",
+      "say": "四十八个月，互联网涨了百分之二百八十四，AI是百分之一百三十。"
+    },
+    {
+      "id": "13-then",
+      "scene": "crash",
+      "at": 62,
+      "text": "然后呢？"
+    },
+    {
+      "id": "14-top",
+      "scene": "crash",
+      "at": 96,
+      "text": "2000年3月，泡沫见顶。",
+      "say": "两千年三月，泡沫见顶。"
+    },
+    {
+      "id": "15-fall",
+      "scene": "crash",
+      "at": 200,
+      "text": "两年半里，纳斯达克跌掉了将近八成。"
+    },
+    {
+      "id": "16-not-fail",
+      "scene": "crash",
+      "at": 388,
+      "text": "互联网没有失败——但它的股价，先跌去了近八成。",
+      "caption": false
+    },
+    {
+      "id": "17-how-long",
+      "scene": "wait",
+      "at": 10,
+      "text": "跌下去以后，要多久才能回到前高？",
+      "caption": false
+    },
+    {
+      "id": "18-world",
+      "scene": "wait",
+      "at": 125,
+      "text": "等待的这些年，互联网正在改变世界。"
+    },
+    {
+      "id": "19-2008",
+      "scene": "wait",
+      "at": 362,
+      "text": "2008年，又遇上金融危机。",
+      "say": "二零零八年，又遇上金融危机。"
+    },
+    {
+      "id": "20-2015",
+      "scene": "wait",
+      "at": 470,
+      "text": "直到2015年4月，指数才重新站上2000年的高点。",
+      "say": "直到二零一五年四月，指数才重新站上两千年的高点。"
+    },
+    {
+      "id": "21-fifteen",
+      "scene": "wait",
+      "at": 640,
+      "text": "整整十五年。"
+    },
+    {
+      "id": "22-1987",
+      "scene": "wait",
+      "at": 692,
+      "text": "而1987年股灾之后，只用了不到两年。",
+      "say": "而一九八七年股灾之后，只用了不到两年。"
+    },
+    {
+      "id": "23-scale",
+      "scene": "wait",
+      "at": 825,
+      "text": "同样是大跌，等待的时间完全不是一个量级。",
+      "caption": false
+    },
+    {
+      "id": "24-far",
+      "scene": "long",
+      "at": 22,
+      "text": "把镜头拉到最远，这是纳斯达克的四十五年。"
+    },
+    {
+      "id": "25-been",
+      "scene": "long",
+      "at": 180,
+      "text": "股灾、泡沫、金融危机，它都经历过。"
+    },
+    {
+      "id": "26-growth",
+      "scene": "long",
+      "at": 345,
+      "text": "从两百点左右，涨到了两万六千多点。"
+    },
+    {
+      "id": "27-hidden",
+      "scene": "long",
+      "at": 470,
+      "text": "可就在这条一路向上的曲线里，藏着一段长达十五年的等待。"
+    },
+    {
+      "id": "28-today",
+      "scene": "ai",
+      "at": 20,
+      "text": "再把互联网泡沫和今天的AI放在一起。"
+    },
+    {
+      "id": "29-ai",
+      "scene": "ai",
+      "at": 200,
+      "text": "AI行情走了四十八个月，涨了130%，比当年的互联网平缓得多。",
+      "say": "AI行情走了四十八个月，涨了百分之一百三十，比当年的互联网平缓得多。"
+    },
+    {
+      "id": "30-unknown",
+      "scene": "ai",
+      "at": 470,
+      "text": "曲线停在这里，之后没人知道。历史可以比较，但不能用来预测时间。",
+      "caption": false
+    },
+    {
+      "id": "33-questions",
+      "scene": "two",
+      "at": 34,
+      "text": "这项技术，长期有没有价值？",
+      "caption": false
+    },
+    {
+      "id": "33b-price",
+      "scene": "two",
+      "at": 128,
+      "text": "今天的资产价格，是否合理？",
+      "caption": false
+    },
+    {
+      "id": "34-different",
+      "scene": "two",
+      "at": 236,
+      "text": "这是两道不同的题。",
+      "caption": false
+    },
+    {
+      "id": "35-quote",
+      "scene": "two",
+      "at": 340,
+      "text": "指数最终重新创新高，不等于每一代投资者，都能很快回本。",
+      "caption": false
+    },
+    {
+      "id": "36-rules",
+      "scene": "outro",
+      "at": 30,
+      "text": "最后记住四件事：统一基准，分清历史与预测，留意回本口径，别只看形状。",
+      "caption": false
+    },
+    {
+      "id": "37-tagline",
+      "scene": "outro",
+      "at": 292,
+      "text": "技术可以长期成功，资本也可能短期定价错误。",
+      "caption": false
+    },
+    {
+      "id": "38-disclaimer",
+      "scene": "outro",
+      "at": 444,
+      "text": "历史数据，不构成投资建议。",
+      "caption": false
+    }
+  ]
+}

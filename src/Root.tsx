@@ -16,7 +16,17 @@ export const RemotionRoot: React.FC = () => (
         fps={FPS}
         width={WIDTH}
         height={HEIGHT}
-        defaultProps={{ music: true }}
+        defaultProps={{ music: true, captions: "auto" as const }}
+      />
+      {/* 竖版 9:16：同一套场景按 useLayout() 重新排版 */}
+      <Composition
+        id="TechCyclesVertical"
+        component={TechCycles}
+        durationInFrames={TOTAL_FRAMES}
+        fps={FPS}
+        width={HEIGHT}
+        height={WIDTH}
+        defaultProps={{ music: true, captions: "auto" as const }}
       />
     </Folder>
   </>

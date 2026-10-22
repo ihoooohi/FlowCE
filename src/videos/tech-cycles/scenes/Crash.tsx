@@ -2,8 +2,9 @@ import React from "react";
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import { Callout, Dot } from "../../../lib/chart";
 import { Eyebrow, Reveal, Shake } from "../../../lib/components";
+import { useLayout } from "../../../lib/layout";
 import { CLAMP, ease, fade, lerp, prog } from "../../../lib/motion";
-import { SAFE, color, font } from "../../../lib/theme";
+import { color, font } from "../../../lib/theme";
 import { COPY } from "../copy";
 import { FACTS, SERIES, indexOf, netFull } from "../data";
 import { beats } from "../timeline";
@@ -23,6 +24,7 @@ const MONTH_END = netFull.length - 1; // 2002-10
 
 export const Crash: React.FC = () => {
   const frame = useCurrentFrame();
+  const { W, pick, padX, top } = useLayout();
 
   const r = prog(frame, B.rescale, 60, ease.inOut);
   const xMax = lerp(48, 84, r);
@@ -53,13 +55,13 @@ export const Crash: React.FC = () => {
         style={{ background: `radial-gradient(ellipse 70% 60% at 40% 60%, rgba(255,70,60,${redTint}) 0%, transparent 70%)` }}
       />
       <Shake intensity={shake} seed="crash">
-        <div style={{ position: "absolute", left: SAFE.x, top: SAFE.y }}>
+        <div style={{ position: "absolute", left: padX, top }}>
           <Eyebrow index={C.eyebrow[0]} label={C.eyebrow[1]} at={18} />
           <Reveal
             text={C.head}
             at={26}
             stagger={1.6}
-            style={{ fontFamily: font.serif, fontWeight: 700, fontSize: 66, color: color.ink, marginTop: 26 }}
+            style={{ fontFamily: font.serif, fontWeight: 700, fontSize: pick(66, 58), color: color.ink, marginTop: 26, maxWidth: W - 2 * padX }}
           />
         </div>
 
@@ -113,13 +115,13 @@ export const Crash: React.FC = () => {
       </Shake>
 
       {/* 跌幅计数 */}
-      <div style={{ position: "absolute", left: 1460, top: 330, opacity: fade(frame, B.crashStart - 10, 14) }}>
+      <div style={{ position: "absolute", left: pick(1460, padX), top: pick(330, 1225), opacity: fade(frame, B.crashStart - 10, 14) }}>
         <div style={{ fontFamily: font.sans, fontSize: 26, color: color.muted, fontWeight: 500 }}>{C.drawdown}</div>
         <div
           style={{
             fontFamily: font.mono,
             fontWeight: 800,
-            fontSize: 132,
+            fontSize: pick(132, 112),
             color: color.red,
             lineHeight: 1.1,
             textShadow: `0 0 50px rgba(255,97,89,${0.5 * prog(frame, B.crashStart, 60)})`,
@@ -137,9 +139,9 @@ export const Crash: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          left: 190,
-          width: 1180,
-          top: 470,
+          left: pick(190, padX),
+          width: pick(1180, W - 2 * padX),
+          top: pick(470, 720),
           textAlign: "center",
         }}
       >
@@ -147,13 +149,13 @@ export const Crash: React.FC = () => {
           text={C.l1}
           at={B.statement}
           stagger={2}
-          style={{ fontFamily: font.serif, fontWeight: 700, fontSize: 70, color: color.body, lineHeight: 1.5 }}
+          style={{ fontFamily: font.serif, fontWeight: 700, fontSize: pick(70, 58), color: color.body, lineHeight: 1.5 }}
         />
         <Reveal
           text={C.l2}
           at={B.statement + 45}
           stagger={2}
-          style={{ fontFamily: font.serif, fontWeight: 900, fontSize: 70, color: color.ink, lineHeight: 1.5 }}
+          style={{ fontFamily: font.serif, fontWeight: 900, fontSize: pick(70, 58), color: color.ink, lineHeight: 1.5 }}
         />
       </div>
     </AbsoluteFill>

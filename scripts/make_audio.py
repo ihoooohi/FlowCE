@@ -1,9 +1,11 @@
-"""程序化生成《市场的长镜头》的配乐与音效。
+"""程序化生成《市场的长镜头》的配乐与音效，并与旁白混音。
 
 完全由代码合成（无采样、无版权素材），节拍点读取
 src/videos/tech-cycles/timeline.json，与画面帧级对齐。
 
-用法：python3 -I scripts/make_audio.py   → public/tech-cycles/score.m4a
+用法：python3 -I scripts/make_audio.py
+  → public/tech-cycles/score.m4a   纯配乐
+  → public/tech-cycles/mix.m4a     配乐 + 旁白（有旁白时；配乐在说话处自动让位）
 依赖：numpy、scipy、ffmpeg
 """
 
@@ -18,6 +20,9 @@ ROOT = Path(__file__).resolve().parent.parent
 TIMELINE = ROOT / "src/videos/tech-cycles/timeline.json"
 OUT_WAV = ROOT / "out/score.wav"
 OUT = ROOT / "public/tech-cycles/score.m4a"
+VO_MANIFEST = ROOT / "src/videos/tech-cycles/data/voiceover.json"
+OUT_MIX_WAV = ROOT / "out/mix.wav"
+OUT_MIX = ROOT / "public/tech-cycles/mix.m4a"
 
 SR = 48000
 RNG = np.random.default_rng(2026)
@@ -498,29 +503,73 @@ def master(mix: np.ndarray, target_lufs: float, ceiling_db: float) -> np.ndarray
     return np.clip(out, -ceiling, ceiling)
 
 
+def load_voiceover() -> tuple[np.ndarray, list[tuple[float, float]]] | None:
+    """按 voiceover.json 把每句旁白放到它的帧位置（开头静音对齐到节拍点）"""
+    if not VO_MANIFEST.exists():
+        return None
+    lines = json.loads(VO_MANIFEST.read_text()).get("lines") or []
+    if not lines:
+        return None
+    vo = np.zeros(N)
+    spans = []
+    for l in lines:
+        raw = subprocess.run(
+            ["ffmpeg", "-v", "error", "-i", str(ROOT / "public" / l["file"]), "-ac", "1", "-ar", str(SR), "-f", "f32le", "-"],
+            check=True,
+            capture_output=True,
+        ).stdout
+        x = np.frombuffer(raw, dtype=np.float32).astype(np.float64)
+        cue = l["frame"] / FPS
+        i0 = max(0, int(round((cue - l["lead"]) * SR)))
+        n = min(len(x), N - i0)
+        vo[i0 : i0 + n] += x[:n]
+        spans.append((cue, cue + l["speech"]))
+    return vo, spans
+
+
+def duck(spans: list[tuple[float, float]], depth_db: float = -8.0, pre: float = 0.3, post: float = 0.7) -> np.ndarray:
+    """旁白期间把配乐压低 depth_db，前后平滑过渡"""
+    active = np.zeros(N)
+    for a, b in spans:
+        active[max(0, int((a - pre) * SR)) : int((b + post) * SR)] = 1.0
+    win = np.hanning(int(0.35 * SR))
+    active = np.clip(signal.fftconvolve(active, win / win.sum(), mode="same"), 0, 1)
+    return 10 ** (depth_db * active / 20)
+
+
+def encode(wav: Path, out: Path, mix: np.ndarray) -> None:
+    write_wav(wav, mix)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-c:a", "aac", "-b:a", "192k", str(out)], check=True)
+    print(f"{out.relative_to(ROOT)}：响度 {measure_lufs(mix):.1f} LUFS，峰值 {20 * np.log10(np.max(np.abs(mix))):.1f} dBFS")
+
+
 def main() -> None:
     score()
     ir = reverb_ir()
     wet = np.vstack([signal.fftconvolve(WET[c], ir[c])[:N] for c in range(2)])
-    mix = DRY + wet * 0.9
-    mix = highpass(mix, 28)
+    music = highpass(DRY + wet * 0.9, 28)
 
     # 片尾淡出
-    t_end = TOTAL
-    fade = np.clip((t_end + 0.5 - np.arange(N) / SR) / 3.0, 0, 1)
-    mix *= fade
-    mix = mix[:, : int((TOTAL + 0.5) * SR)]
+    fade = np.clip((TOTAL + 0.5 - np.arange(N) / SR) / 3.0, 0, 1)
+    music *= fade
+    keep = int((TOTAL + 0.5) * SR)
 
-    # 响度统一到 -16 LUFS（网络视频常用）：整体增益 + 前瞻限幅，保留动态
-    mix = master(mix, target_lufs=-16.0, ceiling_db=-2.0)
-    write_wav(OUT_WAV, mix)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        ["ffmpeg", "-y", "-loglevel", "error", "-i", str(OUT_WAV), "-c:a", "aac", "-b:a", "192k", str(OUT)],
-        check=True,
-    )
-    print(f"响度 {measure_lufs(mix):.1f} LUFS，峰值 {20 * np.log10(np.max(np.abs(mix))):.1f} dBFS")
-    print(f"{TOTAL:.1f}s → {OUT.relative_to(ROOT)}")
+    # 纯配乐：响度统一到 -16 LUFS（网络视频常用），整体增益 + 前瞻限幅，保留动态
+    encode(OUT_WAV, OUT, master(music[:, :keep], target_lufs=-16.0, ceiling_db=-2.0))
+
+    # 有旁白时：旁白 -16 LUFS 为主，配乐降到 -24 LUFS 做底并在说话处再让 8 dB
+    vo = load_voiceover()
+    if vo is None:
+        print("（还没有旁白：运行 scripts/voiceover.py generate 之后再跑一次本脚本）")
+        return
+    voice, spans = vo
+    voice2 = np.vstack([voice, voice])
+    voice2 *= 10 ** ((-16.0 - measure_lufs(voice2[:, :keep])) / 20)
+    bed = music * 10 ** ((-24.0 - measure_lufs(music[:, :keep])) / 20)
+    mix = bed * duck(spans) + voice2
+    encode(OUT_MIX_WAV, OUT_MIX, master(mix[:, :keep], target_lufs=-16.0, ceiling_db=-2.0))
+    print(f"{TOTAL:.1f}s · 旁白 {len(spans)} 句")
 
 
 if __name__ == "__main__":
