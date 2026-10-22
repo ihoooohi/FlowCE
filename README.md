@@ -9,7 +9,7 @@
 
 | 视频 | 时长 | 说明 |
 |------|------|------|
-| **市场的长镜头｜三次科技革命的股市曲线**<br>横版 `TechCycles` · [`exports/tech-cycles.mp4`](exports/tech-cycles.mp4)<br>竖版 `TechCyclesVertical` · [`exports/tech-cycles-vertical.mp4`](exports/tech-cycles-vertical.mp4) | 3:12 · 1920×1080 / 1080×1920 | 把 PC、互联网、AI 三次科技革命放进同一个镜头：技术可以长期成功，资本也可能短期定价错误。分镜见 [`materials/tech-cycles/storyboard.md`](materials/tech-cycles/storyboard.md) |
+| **市场的长镜头｜三次科技革命的股市曲线**<br>横版 `TechCycles` · [`exports/tech-cycles.mp4`](exports/tech-cycles.mp4)<br>竖版 `TechCyclesVertical` · [`exports/tech-cycles-vertical.mp4`](exports/tech-cycles-vertical.mp4) | 3:12 · 1920×1080 / 1080×1920 · 中文旁白（MiniMax「沉稳高管」），竖版带字幕 | 把 PC、互联网、AI 三次科技革命放进同一个镜头：技术可以长期成功，资本也可能短期定价错误。分镜见 [`materials/tech-cycles/storyboard.md`](materials/tech-cycles/storyboard.md) |
 
 ## 快速开始
 
