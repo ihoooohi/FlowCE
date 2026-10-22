@@ -5,6 +5,8 @@
 
 ## 作品
 
+![市场的长镜头](exports/tech-cycles-cover.jpg)
+
 | 视频 | 时长 | 说明 |
 |------|------|------|
 | **市场的长镜头｜三次科技革命的股市曲线**<br>`TechCycles` · [`exports/tech-cycles.mp4`](exports/tech-cycles.mp4) | 3:12 · 1080p | 把 PC、互联网、AI 三次科技革命放进同一个镜头：技术可以长期成功，资本也可能短期定价错误。分镜见 [`materials/tech-cycles/storyboard.md`](materials/tech-cycles/storyboard.md) |
