@@ -3,8 +3,8 @@
   "voice": {
     "provider": "minimax",
     "model": "speech-2.8-hd",
-    "voice_id": "audiobook_male_1",
-    "speed": 1.0,
+    "voice_id": "Chinese (Mandarin)_Reliable_Executive",
+    "speed": 0.9,
     "vol": 1.0,
     "pitch": 0,
     "emotion": "neutral",

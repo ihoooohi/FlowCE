@@ -1,4 +1,366 @@
 {
-  "comment": "由 scripts/voiceover.py 生成，请勿手改。lines 为空表示还没有配音。",
-  "lines": []
+ "comment": "由 scripts/voiceover.py 生成，请勿手改。",
+ "fps": 30,
+ "lines": [
+  {
+   "id": "01-peak",
+   "file": "tech-cycles/vo/01-peak.mp3",
+   "frame": 14,
+   "lead": 0.423,
+   "speech": 3.929,
+   "duration": 4.7,
+   "text": "2000年3月10日，纳斯达克收在5048点。",
+   "hash": "16060b307abd"
+  },
+  {
+   "id": "02-question",
+   "file": "tech-cycles/vo/02-question.mp3",
+   "frame": 180,
+   "lead": 0.447,
+   "speech": 2.669,
+   "duration": 3.5,
+   "text": "如果那天买入，要等多久才能回本？",
+   "hash": "1f4dae15067f"
+  },
+  {
+   "id": "03-fifteen",
+   "file": "tech-cycles/vo/03-fifteen.mp3",
+   "frame": 298,
+   "lead": 0.413,
+   "speech": 0.646,
+   "duration": 1.4,
+   "text": "十五年。",
+   "hash": "9f9eecab73d5"
+  },
+  {
+   "id": "04-world",
+   "file": "tech-cycles/vo/04-world.mp3",
+   "frame": 340,
+   "lead": 0.429,
+   "speech": 3.321,
+   "duration": 4.1,
+   "text": "而这十五年，正是互联网改变世界的十五年。",
+   "hash": "250b5c6f0d95"
+  },
+  {
+   "id": "05-zoom",
+   "file": "tech-cycles/vo/05-zoom.mp3",
+   "frame": 490,
+   "lead": 0.43,
+   "speech": 2.707,
+   "duration": 3.5,
+   "text": "把镜头拉远，看看过去四十五年。",
+   "hash": "7b572f356867"
+  },
+  {
+   "id": "06-three",
+   "file": "tech-cycles/vo/06-three.mp3",
+   "frame": 786,
+   "lead": 0.38,
+   "speech": 5.825,
+   "duration": 6.6,
+   "text": "过去四十五年，三次技术革命：个人电脑、互联网，还有今天的人工智能。",
+   "hash": "4fcdcad69df1"
+  },
+  {
+   "id": "08-same",
+   "file": "tech-cycles/vo/08-same.mp3",
+   "frame": 1030,
+   "lead": 0.425,
+   "speech": 3.715,
+   "duration": 4.5,
+   "text": "它们都改变了世界。可股市曲线，长得一样吗？",
+   "hash": "65f885da859e"
+  },
+  {
+   "id": "09-base",
+   "file": "tech-cycles/vo/09-base.mp3",
+   "frame": 1196,
+   "lead": 0.419,
+   "speech": 4.642,
+   "duration": 5.4,
+   "text": "把三次革命的起点都设为一百，只看各自的前四十八个月。",
+   "hash": "59c75c3718f1"
+  },
+  {
+   "id": "10-together",
+   "file": "tech-cycles/vo/10-together.mp3",
+   "frame": 1386,
+   "lead": 0.408,
+   "speech": 2.441,
+   "duration": 3.2,
+   "text": "头两年，三条线几乎贴在一起。",
+   "hash": "a6c3ebed37b5"
+  },
+  {
+   "id": "11-vertical",
+   "file": "tech-cycles/vo/11-vertical.mp3",
+   "frame": 1556,
+   "lead": 0.425,
+   "speech": 3.894,
+   "duration": 4.7,
+   "text": "最后一年，互联网突然加速，几乎是垂直拉升。",
+   "hash": "bf765f873bf3"
+  },
+  {
+   "id": "12-result",
+   "file": "tech-cycles/vo/12-result.mp3",
+   "frame": 1721,
+   "lead": 0.429,
+   "speech": 5.437,
+   "duration": 6.2,
+   "text": "四十八个月，互联网涨了284%，AI是130%。",
+   "hash": "f98c6f1fc892"
+  },
+  {
+   "id": "13-then",
+   "file": "tech-cycles/vo/13-then.mp3",
+   "frame": 1928,
+   "lead": 0.366,
+   "speech": 0.509,
+   "duration": 1.2,
+   "text": "然后呢？",
+   "hash": "88d2fbfde395"
+  },
+  {
+   "id": "14-top",
+   "file": "tech-cycles/vo/14-top.mp3",
+   "frame": 1962,
+   "lead": 0.416,
+   "speech": 1.882,
+   "duration": 2.7,
+   "text": "2000年3月，泡沫见顶。",
+   "hash": "42e0aa06b124"
+  },
+  {
+   "id": "15-fall",
+   "file": "tech-cycles/vo/15-fall.mp3",
+   "frame": 2066,
+   "lead": 0.427,
+   "speech": 3.56,
+   "duration": 4.3,
+   "text": "两年半里，纳斯达克跌掉了将近八成。",
+   "hash": "ff0a5df097e9"
+  },
+  {
+   "id": "16-not-fail",
+   "file": "tech-cycles/vo/16-not-fail.mp3",
+   "frame": 2254,
+   "lead": 0.465,
+   "speech": 3.806,
+   "duration": 4.6,
+   "text": "互联网没有失败——但它的股价，先跌去了近八成。",
+   "hash": "85f3b3de5308"
+  },
+  {
+   "id": "17-how-long",
+   "file": "tech-cycles/vo/17-how-long.mp3",
+   "frame": 2434,
+   "lead": 0.413,
+   "speech": 2.602,
+   "duration": 3.4,
+   "text": "跌下去以后，要多久才能回到前高？",
+   "hash": "e7711b784bbc"
+  },
+  {
+   "id": "18-world",
+   "file": "tech-cycles/vo/18-world.mp3",
+   "frame": 2549,
+   "lead": 0.433,
+   "speech": 3.306,
+   "duration": 4.1,
+   "text": "等待的这些年，互联网正在改变世界。",
+   "hash": "62b91e393103"
+  },
+  {
+   "id": "19-2008",
+   "file": "tech-cycles/vo/19-2008.mp3",
+   "frame": 2786,
+   "lead": 0.431,
+   "speech": 2.255,
+   "duration": 3.0,
+   "text": "2008年，又遇上金融危机。",
+   "hash": "574487c542bd"
+  },
+  {
+   "id": "20-2015",
+   "file": "tech-cycles/vo/20-2015.mp3",
+   "frame": 2894,
+   "lead": 0.429,
+   "speech": 4.217,
+   "duration": 5.0,
+   "text": "直到2015年4月，指数才重新站上2000年的高点。",
+   "hash": "120b9d4bbb78"
+  },
+  {
+   "id": "21-fifteen",
+   "file": "tech-cycles/vo/21-fifteen.mp3",
+   "frame": 3064,
+   "lead": 0.39,
+   "speech": 0.975,
+   "duration": 1.7,
+   "text": "整整十五年。",
+   "hash": "a07c97ad39b8"
+  },
+  {
+   "id": "22-1987",
+   "file": "tech-cycles/vo/22-1987.mp3",
+   "frame": 3116,
+   "lead": 0.431,
+   "speech": 3.686,
+   "duration": 4.5,
+   "text": "而1987年股灾之后，只用了不到两年。",
+   "hash": "25dcc2fcbf43"
+  },
+  {
+   "id": "23-scale",
+   "file": "tech-cycles/vo/23-scale.mp3",
+   "frame": 3249,
+   "lead": 0.411,
+   "speech": 3.597,
+   "duration": 4.4,
+   "text": "同样是大跌，等待的时间完全不是一个量级。",
+   "hash": "459fc0809528"
+  },
+  {
+   "id": "24-far",
+   "file": "tech-cycles/vo/24-far.mp3",
+   "frame": 3394,
+   "lead": 0.434,
+   "speech": 3.358,
+   "duration": 4.1,
+   "text": "把镜头拉到最远，这是纳斯达克的四十五年。",
+   "hash": "dc617f0bbc60"
+  },
+  {
+   "id": "25-been",
+   "file": "tech-cycles/vo/25-been.mp3",
+   "frame": 3552,
+   "lead": 0.375,
+   "speech": 2.993,
+   "duration": 3.7,
+   "text": "股灾、泡沫、金融危机，它都经历过。",
+   "hash": "a3dd70691184"
+  },
+  {
+   "id": "26-growth",
+   "file": "tech-cycles/vo/26-growth.mp3",
+   "frame": 3717,
+   "lead": 0.457,
+   "speech": 3.224,
+   "duration": 4.0,
+   "text": "从两百点左右，涨到了两万六千多点。",
+   "hash": "8ce0d1240a53"
+  },
+  {
+   "id": "27-hidden",
+   "file": "tech-cycles/vo/27-hidden.mp3",
+   "frame": 3842,
+   "lead": 0.421,
+   "speech": 4.633,
+   "duration": 5.4,
+   "text": "可就在这条一路向上的曲线里，藏着一段长达十五年的等待。",
+   "hash": "7147f0bb5b99"
+  },
+  {
+   "id": "28-today",
+   "file": "tech-cycles/vo/28-today.mp3",
+   "frame": 4040,
+   "lead": 0.445,
+   "speech": 3.247,
+   "duration": 4.1,
+   "text": "再把互联网泡沫和今天的AI放在一起。",
+   "hash": "9b5235794c67"
+  },
+  {
+   "id": "29-ai",
+   "file": "tech-cycles/vo/29-ai.mp3",
+   "frame": 4220,
+   "lead": 0.427,
+   "speech": 6.331,
+   "duration": 7.1,
+   "text": "AI行情走了四十八个月，涨了130%，比当年的互联网平缓得多。",
+   "hash": "9276cade88db"
+  },
+  {
+   "id": "30-unknown",
+   "file": "tech-cycles/vo/30-unknown.mp3",
+   "frame": 4490,
+   "lead": 0.423,
+   "speech": 5.988,
+   "duration": 6.8,
+   "text": "曲线停在这里，之后没人知道。历史可以比较，但不能用来预测时间。",
+   "hash": "81792dc736d2"
+  },
+  {
+   "id": "33-questions",
+   "file": "tech-cycles/vo/33-questions.mp3",
+   "frame": 4732,
+   "lead": 0.405,
+   "speech": 2.176,
+   "duration": 2.901,
+   "text": "这项技术，长期有没有价值？",
+   "hash": "9646d97fd8ae"
+  },
+  {
+   "id": "33b-price",
+   "file": "tech-cycles/vo/33b-price.mp3",
+   "frame": 4826,
+   "lead": 0.418,
+   "speech": 2.082,
+   "duration": 2.901,
+   "text": "今天的资产价格，是否合理？",
+   "hash": "370d2584fbb8"
+  },
+  {
+   "id": "34-different",
+   "file": "tech-cycles/vo/34-different.mp3",
+   "frame": 4934,
+   "lead": 0.329,
+   "speech": 1.432,
+   "duration": 2.1,
+   "text": "这是两道不同的题。",
+   "hash": "e69e88579954"
+  },
+  {
+   "id": "35-quote",
+   "file": "tech-cycles/vo/35-quote.mp3",
+   "frame": 5038,
+   "lead": 0.402,
+   "speech": 4.978,
+   "duration": 5.7,
+   "text": "指数最终重新创新高，不等于每一代投资者，都能很快回本。",
+   "hash": "8235263edae9"
+  },
+  {
+   "id": "36-rules",
+   "file": "tech-cycles/vo/36-rules.mp3",
+   "frame": 5256,
+   "lead": 0.43,
+   "speech": 6.841,
+   "duration": 7.6,
+   "text": "最后记住四件事：统一基准，分清历史与预测，留意回本口径，别只看形状。",
+   "hash": "e77fce465277"
+  },
+  {
+   "id": "37-tagline",
+   "file": "tech-cycles/vo/37-tagline.mp3",
+   "frame": 5518,
+   "lead": 0.415,
+   "speech": 3.526,
+   "duration": 4.3,
+   "text": "技术可以长期成功，资本也可能短期定价错误。",
+   "hash": "416479baebf8"
+  },
+  {
+   "id": "38-disclaimer",
+   "file": "tech-cycles/vo/38-disclaimer.mp3",
+   "frame": 5670,
+   "lead": 0.397,
+   "speech": 2.135,
+   "duration": 2.901,
+   "text": "历史数据，不构成投资建议。",
+   "hash": "34f30fc49afa"
+  }
+ ]
 }

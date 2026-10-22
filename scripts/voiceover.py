@@ -48,7 +48,8 @@ SAMPLE_TEXT = "如果那天买入，要等多久才能回本？十五年。而�
 PREFERRED_VOICES = [
     "Chinese (Mandarin)_Reliable_Executive",
     "Chinese (Mandarin)_Gentleman",
-    "Chinese (Mandarin)_News_Anchor",
+    "Chinese (Mandarin)_Male_Announcer",
+    "Chinese (Mandarin)_Radio_Host",
     "presenter_male",
     "audiobook_male_1",
     "audiobook_male_2",
@@ -57,12 +58,12 @@ PREFERRED_VOICES = [
 MODELS = ["speech-2.8-hd", "speech-2.6-hd", "speech-02-hd"]
 
 SAMPLE_VOICES = [
-    "audiobook_male_1",
-    "audiobook_male_2",
-    "presenter_male",
-    "male-qn-jingying",
-    "audiobook_female_1",
-    "presenter_female",
+    "Chinese (Mandarin)_Reliable_Executive",
+    "Chinese (Mandarin)_Gentleman",
+    "Chinese (Mandarin)_Male_Announcer",
+    "Chinese (Mandarin)_Radio_Host",
+    "Chinese (Mandarin)_Lyrical_Voice",
+    "Chinese (Mandarin)_News_Anchor",
 ]
 
 
