@@ -1,0 +1,86 @@
+{
+  "comment": "《AI 的账单》旁白稿。scene + at（场景内帧号，30fps）决定起点；text 用作字幕；say 是读法。生成：python3 -I scripts/voiceover.py generate --slug=ai-bill",
+  "voice": {
+    "provider": "minimax",
+    "model": "speech-2.8-hd",
+    "voice_id": "Chinese (Mandarin)_Gentleman",
+    "speed": 0.9,
+    "vol": 1.0,
+    "pitch": 0,
+    "emotion": "neutral",
+    "language_boost": "Chinese"
+  },
+  "lines": [
+    {
+      "id": "01-friday",
+      "scene": "cold",
+      "at": 20,
+      "text": "10月30日，美股科技股遭遇6月以来最惨的一天。纳指跌2.9%，英特尔跌近三成。",
+      "say": "十月三十日，美股科技股遭遇六月以来最惨的一天。纳指跌百分之二点九，英特尔跌近三成。"
+    },
+    {
+      "id": "02-who",
+      "scene": "scope",
+      "at": 110,
+      "text": "道指10月反而上涨，资金涌进国债。跌的，是AI和科技巨头。"
+    },
+    {
+      "id": "03-earnings",
+      "scene": "earnings",
+      "at": 20,
+      "text": "导火索是一周的财报。Alphabet云业务翻倍，亚马逊云增长39%，股价却都大跌；英特尔的指引远低于预期。",
+      "say": "导火索是一周的财报。Alphabet云业务翻倍，亚马逊云增长百分之三十九，股价却都大跌；英特尔的指引远低于预期。"
+    },
+    {
+      "id": "04-cash",
+      "scene": "cash",
+      "at": 15,
+      "text": "问题不在增长，而在现金。"
+    },
+    {
+      "id": "04b-fcf",
+      "scene": "cash",
+      "at": 100,
+      "text": "Alphabet这一季，自由现金流负91亿美元；亚马逊过去一年，负424亿。",
+      "say": "Alphabet这一季，自由现金流负九十一亿美元；亚马逊过去一年，负四百二十四亿。"
+    },
+    {
+      "id": "05-borrow",
+      "scene": "cash",
+      "at": 362,
+      "text": "钱不够，就发债、卖新股；Alphabet这一季，零回购。"
+    },
+    {
+      "id": "06-bill",
+      "scene": "bill",
+      "at": 15,
+      "text": "账单还在变大：高盛估计，明年五大云厂商的AI投入将达1.2万亿美元。",
+      "say": "账单还在变大：高盛估计，明年五大云厂商的AI投入将达一点二万亿美元。"
+    },
+    {
+      "id": "07-rates",
+      "scene": "bill",
+      "at": 250,
+      "text": "偏偏钱在变贵：油价冲上118美元，市场押注美联储12月加息。",
+      "say": "偏偏钱在变贵：油价冲上一百一十八美元，市场押注美联储十二月加息。"
+    },
+    {
+      "id": "08-camps",
+      "scene": "camps",
+      "at": 10,
+      "text": "外网分成两派：乐观派说这是健康回调；谨慎派担心，借钱的速度会跑赢AI带来的产出。"
+    },
+    {
+      "id": "09-long",
+      "scene": "long",
+      "at": 15,
+      "text": "拉远看，这次还只是回调。但决定能跌多深的，从来是价格和现金。"
+    },
+    {
+      "id": "10-disclaimer",
+      "scene": "long",
+      "at": 300,
+      "text": "以上不构成投资建议。"
+    }
+  ]
+}

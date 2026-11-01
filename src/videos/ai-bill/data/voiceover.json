@@ -1,0 +1,116 @@
+{
+ "comment": "由 scripts/voiceover.py 生成，请勿手改。",
+ "fps": 30,
+ "lines": [
+  {
+   "id": "01-friday",
+   "file": "ai-bill/vo/01-friday.mp3",
+   "frame": 20,
+   "lead": 0.464,
+   "speech": 8.27,
+   "duration": 9.1,
+   "text": "10月30日，美股科技股遭遇6月以来最惨的一天。纳指跌2.9%，英特尔跌近三成。",
+   "hash": "523767aeb02a"
+  },
+  {
+   "id": "02-who",
+   "file": "ai-bill/vo/02-who.mp3",
+   "frame": 400,
+   "lead": 0.435,
+   "speech": 5.445,
+   "duration": 6.2,
+   "text": "道指10月反而上涨，资金涌进国债。跌的，是AI和科技巨头。",
+   "hash": "4dfe63912467"
+  },
+  {
+   "id": "03-earnings",
+   "file": "ai-bill/vo/03-earnings.mp3",
+   "frame": 600,
+   "lead": 0.443,
+   "speech": 11.097,
+   "duration": 11.9,
+   "text": "导火索是一周的财报。Alphabet云业务翻倍，亚马逊云增长39%，股价却都大跌；英特尔的指引远低于预期。",
+   "hash": "08a01e1ff912"
+  },
+  {
+   "id": "04-cash",
+   "file": "ai-bill/vo/04-cash.mp3",
+   "frame": 1005,
+   "lead": 0.365,
+   "speech": 2.332,
+   "duration": 3.1,
+   "text": "问题不在增长，而在现金。",
+   "hash": "93348089600b"
+  },
+  {
+   "id": "04b-fcf",
+   "file": "ai-bill/vo/04b-fcf.mp3",
+   "frame": 1090,
+   "lead": 0.415,
+   "speech": 7.687,
+   "duration": 8.5,
+   "text": "Alphabet这一季，自由现金流负91亿美元；亚马逊过去一年，负424亿。",
+   "hash": "aa1165d372f4"
+  },
+  {
+   "id": "05-borrow",
+   "file": "ai-bill/vo/05-borrow.mp3",
+   "frame": 1352,
+   "lead": 0.432,
+   "speech": 5.374,
+   "duration": 6.2,
+   "text": "钱不够，就发债、卖新股；Alphabet这一季，零回购。",
+   "hash": "28fc3b04ab94"
+  },
+  {
+   "id": "06-bill",
+   "file": "ai-bill/vo/06-bill.mp3",
+   "frame": 1535,
+   "lead": 0.461,
+   "speech": 6.876,
+   "duration": 7.7,
+   "text": "账单还在变大：高盛估计，明年五大云厂商的AI投入将达1.2万亿美元。",
+   "hash": "482c3fe7eee1"
+  },
+  {
+   "id": "07-rates",
+   "file": "ai-bill/vo/07-rates.mp3",
+   "frame": 1770,
+   "lead": 0.418,
+   "speech": 6.098,
+   "duration": 6.9,
+   "text": "偏偏钱在变贵：油价冲上118美元，市场押注美联储12月加息。",
+   "hash": "cff9170ee707"
+  },
+  {
+   "id": "08-camps",
+   "file": "ai-bill/vo/08-camps.mp3",
+   "frame": 2000,
+   "lead": 0.408,
+   "speech": 7.991,
+   "duration": 8.8,
+   "text": "外网分成两派：乐观派说这是健康回调；谨慎派担心，借钱的速度会跑赢AI带来的产出。",
+   "hash": "4ce396de89c5"
+  },
+  {
+   "id": "09-long",
+   "file": "ai-bill/vo/09-long.mp3",
+   "frame": 2295,
+   "lead": 0.423,
+   "speech": 5.83,
+   "duration": 6.6,
+   "text": "拉远看，这次还只是回调。但决定能跌多深的，从来是价格和现金。",
+   "hash": "648e79fbf94b"
+  },
+  {
+   "id": "10-disclaimer",
+   "file": "ai-bill/vo/10-disclaimer.mp3",
+   "frame": 2580,
+   "lead": 0.352,
+   "speech": 1.71,
+   "duration": 2.4,
+   "text": "以上不构成投资建议。",
+   "hash": "0f12254666d8"
+  }
+ ]
+}

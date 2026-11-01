@@ -1,28 +1,30 @@
-"""程序化生成《市场的长镜头》的配乐与音效，并与旁白混音。
+"""程序化生成配乐与音效，并与旁白混音。
 
 完全由代码合成（无采样、无版权素材），节拍点读取
-src/videos/tech-cycles/timeline.json，与画面帧级对齐。
+src/videos/<slug>/timeline.json，与画面帧级对齐。每支视频一个 score_<slug>() 编排函数。
 
-用法：python3 -I scripts/make_audio.py
-  → public/tech-cycles/score.m4a   纯配乐
-  → public/tech-cycles/mix.m4a     配乐 + 旁白（有旁白时；配乐在说话处自动让位）
+用法：python3 -I scripts/make_audio.py [--slug=tech-cycles]
+  → public/<slug>/score.m4a   纯配乐
+  → public/<slug>/mix.m4a     配乐 + 旁白（有旁白时；配乐在说话处自动让位）
 依赖：numpy、scipy、ffmpeg
 """
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
 from scipy import signal
 
 ROOT = Path(__file__).resolve().parent.parent
-TIMELINE = ROOT / "src/videos/tech-cycles/timeline.json"
-OUT_WAV = ROOT / "out/score.wav"
-OUT = ROOT / "public/tech-cycles/score.m4a"
-VO_MANIFEST = ROOT / "src/videos/tech-cycles/data/voiceover.json"
-OUT_MIX_WAV = ROOT / "out/mix.wav"
-OUT_MIX = ROOT / "public/tech-cycles/mix.m4a"
+SLUG = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--slug=")), "tech-cycles")
+TIMELINE = ROOT / f"src/videos/{SLUG}/timeline.json"
+OUT_WAV = ROOT / f"out/{SLUG}-score.wav"
+OUT = ROOT / f"public/{SLUG}/score.m4a"
+VO_MANIFEST = ROOT / f"src/videos/{SLUG}/data/voiceover.json"
+OUT_MIX_WAV = ROOT / f"out/{SLUG}-mix.wav"
+OUT_MIX = ROOT / f"public/{SLUG}/mix.m4a"
 
 SR = 48000
 RNG = np.random.default_rng(2026)
@@ -296,7 +298,8 @@ def arpeggio(t0: float, t1: float, chords: list[str], rate: float, gain: float =
 # --------------------------------------------------------------------------
 
 
-def score() -> None:
+def score_tech_cycles() -> None:
+    """《市场的长镜头》"""
     # 1. 开场：钟表声 + 低频持续音 → 冲击
     s = "cold-open"
     impact = at(s, "impact")
@@ -432,6 +435,101 @@ def score() -> None:
     add(e + 1.3, bell(mtof(84), 6), gain=0.07, send=0.8)
 
 
+def score_ai_bill() -> None:
+    """《AI 的账单》：比第一集更紧，开场三记重击，中段推进，结尾回到长镜头的温暖和声"""
+    # 1. 冷开场：低频持续音 + 急促钟摆 + 三记重击
+    s = "cold"
+    hits = [at(s, "s1"), at(s, "s2"), at(s, "s3")]
+    pad(start(s), [26, 38, 45], end(s) - start(s) + 0.4, gain=0.07, bright=1.2, attack=1.6, release=0.6, send=0.3)
+    t, k = start(s) + 0.3, 0
+    while t < hits[2] - 0.2:
+        add(t, tick(k % 2 == 0), pan=0.15 if k % 2 else -0.15, gain=0.26, send=0.15)
+        t += 0.5
+        k += 1
+    for i, h in enumerate(hits):
+        add(h, sub_boom(2.4, 110 - 10 * i, 32), gain=0.42 + 0.06 * i, send=0.25)
+        add(h, noise_swell(1.6, 2400, 200, rise=False), gain=0.10, send=0.5)
+        for m in ([38, 45, 50], [37, 44, 50], [36, 43, 49])[i]:
+            add(h, piano(mtof(m), 3, 1.8), gain=0.10, send=0.4)
+    add(hits[2] + 1.6, riser(end(s) - hits[2] - 1.4, 160, 1600), gain=0.10, send=0.35)
+
+    # 2. 片名 + 规模
+    s = "scope"
+    ti = at(s, "title")
+    add(ti, bell(mtof(74), 5), gain=0.12, send=0.8)
+    add(ti, sub_boom(2.0, 80, 34), gain=0.25, send=0.4)
+    pad(ti, CH["Dm9"], at(s, "scope") - ti + 1.0, gain=0.05, bright=2.6, attack=0.2, release=1.0, send=0.7)
+    sc = at(s, "scope")
+    progression(sc, end(s) + 0.4, ["Dm", "Bb"], gain=0.042, bright=2.0)
+    t = sc
+    while t < end(s):
+        add(t, thump(), gain=0.16, send=0.05)
+        t += 0.5
+
+    # 3. 财报周：推进的分解和弦 + 鼓点；每张卡片一声钟，股价变红时一记低音
+    s = "earnings"
+    progression(start(s), end(s) + 0.4, ["Dm", "Bb", "Gm", "A"], gain=0.04, bright=2.4)
+    arpeggio(start(s) + 0.3, end(s), ["Dm", "Bb", "Gm", "A"], rate=0.18, gain=0.038, pattern=(1, 3, 2, 4, 3, 2, 4, 3))
+    t = start(s)
+    while t < end(s):
+        add(t, thump(), gain=0.2, send=0.05)
+        t += 0.36
+    for b, m in (("c1", 81), ("c2", 84), ("c3", 86)):
+        add(at(s, b), bell(mtof(m), 3.5), gain=0.08, send=0.7)
+    for b in ("red", "red3"):
+        add(at(s, b), sub_boom(1.6, 90, 36), gain=0.3, send=0.3)
+
+    # 4. 现金：更暗，心跳；自由现金流转负时一声低钟，"回购 0" 盖章一记重击
+    s = "cash"
+    pad(start(s), CH["Dark"], at(s, "fund") - start(s) + 1.0, gain=0.05, bright=1.3, attack=0.8, release=1.2, send=0.5)
+    t = start(s) + 0.4
+    while t < at(s, "stamp") - 0.3:
+        add(t, thump(), gain=0.26, send=0.05)
+        add(t + 0.22, thump(), gain=0.16, send=0.05)
+        t += 0.9
+    add(at(s, "wf") + 82 / FPS, bell(mtof(57), 5), gain=0.12, send=0.7)
+    add(at(s, "amzn") + 24 / FPS, sub_boom(1.8, 70, 30), gain=0.25, send=0.4)
+    progression(at(s, "fund"), end(s) + 0.4, ["Gm", "A"], gain=0.045, bright=1.8)
+    add(at(s, "stamp"), sub_boom(1.6, 120, 40), gain=0.45, send=0.2)
+    add(at(s, "stamp"), noise_swell(0.8, 3000, 400, rise=False), gain=0.12, send=0.3)
+
+    # 5. 账单：上扬；"钱在变贵" 时沉下去
+    s = "bill"
+    progression(start(s), at(s, "money"), ["Bb", "C", "Dm"], gain=0.045, bright=2.8)
+    arpeggio(start(s) + 0.2, at(s, "money"), ["Bb", "C", "Dm"], rate=0.2, gain=0.036)
+    add(at(s, "goldman") - 2.4, riser(2.4, 220, 2200), gain=0.10, send=0.35)
+    add(at(s, "goldman"), bell(mtof(86), 4), gain=0.1, send=0.7)
+    mo = at(s, "money")
+    add(mo, sub_boom(2.0, 90, 30), gain=0.35, send=0.3)
+    pad(mo, CH["Dark"], end(s) - mo + 1.0, gain=0.05, bright=1.4, attack=0.3, release=1.2, send=0.5)
+    t = mo
+    while t < end(s):
+        add(t, thump(), gain=0.22, send=0.05)
+        t += 0.45
+    for b in ("oil", "fed"):
+        add(at(s, b), piano(mtof(38), 3, 1.6), gain=0.16, send=0.4)
+        add(at(s, b), piano(mtof(45), 3, 1.6), gain=0.12, send=0.4)
+
+    # 6. 两派：左边明亮、右边阴沉的钢琴
+    s = "camps"
+    progression(start(s), end(s) + 0.4, ["Bb", "Gm"], gain=0.035, bright=1.8)
+    for i, m in enumerate([65, 69, 72]):
+        add(at(s, "bull") + i * 0.32, piano(mtof(m), 3.5, 2.0), pan=-0.6, gain=0.11, send=0.6)
+    for i, m in enumerate([62, 65, 68]):
+        add(at(s, "bear") + i * 0.32, piano(mtof(m), 3.5, 2.0), pan=0.6, gain=0.11, send=0.6)
+
+    # 7. 长镜头：回到温暖的大调，片尾长尾音
+    s = "long"
+    progression(start(s), at(s, "end"), ["F/A", "Bb", "C"], gain=0.05, bright=2.6)
+    for i in range(5):
+        add(at(s, "bars") + (0 if i == 0 else (18 + i * 12) / FPS), bell(mtof([88, 76, 79, 81, 84][i]), 3.5), pan=-0.4 + 0.2 * i, gain=0.07, send=0.7)
+    e = at(s, "end")
+    pad(e, CH["F"] + [65, 69], end(s) - e + 3.0, gain=0.055, bright=2.8, attack=0.3, release=3.5, send=0.9)
+    add(e, sub_boom(2.0, 80, 35), gain=0.22, send=0.5)
+    add(e + 0.6, bell(mtof(77), 6), gain=0.1, send=0.8)
+    add(e + 1.0, bell(mtof(84), 6), gain=0.07, send=0.8)
+
+
 # --------------------------------------------------------------------------
 # 混音
 # --------------------------------------------------------------------------
@@ -544,8 +642,11 @@ def encode(wav: Path, out: Path, mix: np.ndarray) -> None:
     print(f"{out.relative_to(ROOT)}：响度 {measure_lufs(mix):.1f} LUFS，峰值 {20 * np.log10(np.max(np.abs(mix))):.1f} dBFS")
 
 
+SCORES = {"tech-cycles": score_tech_cycles, "ai-bill": score_ai_bill}
+
+
 def main() -> None:
-    score()
+    SCORES[SLUG]()
     ir = reverb_ir()
     wet = np.vstack([signal.fftconvolve(WET[c], ir[c])[:N] for c in range(2)])
     music = highpass(DRY + wet * 0.9, 28)

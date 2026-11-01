@@ -2,6 +2,8 @@ import "./lib/fonts";
 import React from "react";
 import { Composition, Folder } from "remotion";
 import { FPS, HEIGHT, WIDTH } from "./lib/theme";
+import { AIBill } from "./videos/ai-bill/AIBill";
+import { TOTAL_FRAMES as AI_BILL_FRAMES } from "./videos/ai-bill/timeline";
 import { TechCycles } from "./videos/tech-cycles/TechCycles";
 import { TOTAL_FRAMES } from "./videos/tech-cycles/timeline";
 
@@ -26,6 +28,17 @@ export const RemotionRoot: React.FC = () => (
         fps={FPS}
         width={HEIGHT}
         height={WIDTH}
+        defaultProps={{ music: true, captions: "auto" as const }}
+      />
+    </Folder>
+    <Folder name="ai-bill">
+      <Composition
+        id="AIBill"
+        component={AIBill}
+        durationInFrames={AI_BILL_FRAMES}
+        fps={FPS}
+        width={WIDTH}
+        height={HEIGHT}
         defaultProps={{ music: true, captions: "auto" as const }}
       />
     </Folder>

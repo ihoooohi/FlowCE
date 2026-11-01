@@ -1,9 +1,7 @@
 import React from "react";
-import { AbsoluteFill, Audio, Sequence, staticFile, useVideoConfig } from "remotion";
-import { Captions } from "../../lib/captions";
-import { Backdrop, Grain, SceneFade, Vignette } from "../../lib/components";
-import { useFontsReady } from "../../lib/fonts";
+import { useVideoConfig } from "remotion";
 import { useLayout } from "../../lib/layout";
+import { VideoShell } from "../../lib/shell";
 import { ALL_TEXT } from "./copy";
 import { AINow } from "./scenes/AINow";
 import { ColdOpen } from "./scenes/ColdOpen";
@@ -40,27 +38,16 @@ export type TechCyclesProps = {
 
 /** 《市场的长镜头｜三次科技革命的股市曲线》，横版与竖版共用 */
 export const TechCycles: React.FC<TechCyclesProps> = ({ music, captions }) => {
-  useFontsReady(ALL_TEXT);
   const { fps } = useVideoConfig();
   const { portrait } = useLayout();
   const showCaptions = captions === "on" || (captions === "auto" && portrait && HAS_VOICE);
   return (
-    <AbsoluteFill style={{ backgroundColor: "#060d0e" }}>
-      <Backdrop />
-      {SCENES.map((s) => {
-        const Scene = COMPONENTS[s.id];
-        return (
-          <Sequence key={s.id} from={s.from} durationInFrames={s.dur} name={s.id}>
-            <SceneFade dur={s.dur} inDur={s.fadeIn} outDur={s.fadeOut}>
-              <Scene />
-            </SceneFade>
-          </Sequence>
-        );
-      })}
-      <Vignette />
-      <Grain />
-      {showCaptions && <Captions cues={captionCues(fps)} />}
-      {music && <Audio src={staticFile(HAS_VOICE ? "tech-cycles/mix.m4a" : "tech-cycles/score.m4a")} />}
-    </AbsoluteFill>
+    <VideoShell
+      scenes={SCENES}
+      components={COMPONENTS}
+      allText={ALL_TEXT}
+      captions={showCaptions ? captionCues(fps) : undefined}
+      audio={music ? (HAS_VOICE ? "tech-cycles/mix.m4a" : "tech-cycles/score.m4a") : undefined}
+    />
   );
 };

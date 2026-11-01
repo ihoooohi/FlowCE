@@ -10,6 +10,7 @@
 | 视频 | 时长 | 说明 |
 |------|------|------|
 | **市场的长镜头｜三次科技革命的股市曲线**<br>横版 `TechCycles` · [`exports/tech-cycles.mp4`](exports/tech-cycles.mp4)<br>竖版 `TechCyclesVertical` · [`exports/tech-cycles-vertical.mp4`](exports/tech-cycles-vertical.mp4) | 3:12 · 1920×1080 / 1080×1920 · 中文旁白（MiniMax「沉稳高管」），竖版带字幕 | 把 PC、互联网、AI 三次科技革命放进同一个镜头：技术可以长期成功，资本也可能短期定价错误。分镜见 [`materials/tech-cycles/storyboard.md`](materials/tech-cycles/storyboard.md) |
+| **AI 的账单｜美股这次为什么跌**（系列第二集）<br>横版 `AIBill` · [`exports/ai-bill.mp4`](exports/ai-bill.mp4) | 1:30 · 1920×1080 · 中文旁白（MiniMax「温润男声」） | 2026 年 10 月底美股科技股大跌：AI 业务在增长，现金却在流出，钱还在变贵。资料与出处见 [`materials/us-selloff-2026-10/research.md`](materials/us-selloff-2026-10/research.md) |
 
 ## 快速开始
 
@@ -46,7 +47,7 @@ python3 -I scripts/make_textures.py   # 胶片颗粒、雾气贴图
 1. 网络放行：把 `api.minimaxi.com` 加进 Allowed domains。国际站账号改为放行 `api.minimax.io`。
 2. 环境变量：添加 `MINIMAX_API_KEY`。国际站账号再加一个 `MINIMAX_API_HOST=https://api.minimax.io`，key 和 host 必须来自同一个站点。
 
-**一键出片**：`npm run produce`（检查 → 配音 → 混音 → 横竖版渲染 → 复制到 `exports/`）。配置的音色在账号上不可用时会自动换成可用的解说类音色，并写回 `narration.json`。
+**一键出片**：`npm run produce`（检查 → 配音 → 混音 → 渲染 → 复制到 `exports/`）；其他视频加 slug，如 `bash scripts/produce.sh ai-bill`。配置的音色在账号上不可用时会自动换成可用的解说类音色，并写回 `narration.json`。
 
 **分步**：
 
@@ -78,6 +79,9 @@ src/
     chart.tsx              SVG 图表原语：比例尺、逐段绘制折线、网格、标注、斜线阴影
     layout.ts              横竖版共用场景：useLayout() 给出画幅与边距
     captions.tsx           字幕（按标点切成短句，按字数分配时长）
+    timeline.ts            读取 timeline.json，排布场景
+    voiceover.ts           旁白清单 → 是否有配音、字幕时间
+    shell.tsx              每支视频的外壳：背景、场景排布、颗粒、字幕、声音
   videos/
     tech-cycles/           《市场的长镜头》
       copy.ts              全部文案（改字只改这里）
@@ -87,6 +91,7 @@ src/
       data/                纳斯达克月度序列、旁白清单（voiceover.json，由脚本生成）
       scenes/              每个场景一个组件
       TechCycles.tsx       串联场景 + 配乐 + 字幕（横竖版共用）
+    ai-bill/               《AI 的账单》（结构同上）
 public/                    静态资源（配乐、贴图）
 materials/<视频>/          原始素材、分镜脚本
 scripts/                   渲染、静帧、配乐、数据处理脚本
@@ -99,8 +104,9 @@ exports/                   定稿成片
 2. **文案与时间轴**：在 `src/videos/<slug>/` 新建 `copy.ts`、`timeline.json`（照抄 tech-cycles 的结构）。
 3. **场景**：每个场景一个组件，用 `src/lib` 里的组件和 `beats()` 读取节拍点。
 4. **注册**：在 `src/Root.tsx` 加一个 `<Composition>`。
-5. **配乐**：复制 `scripts/make_audio.py`，改 `score()` 里的编排；节拍点从 `timeline.json` 读取，画面改了时长重跑一次即可对齐。
-6. **检查**：先用 `scripts/still.mjs` 导几帧看排版，再整片渲染；定稿复制到 `exports/`。
+5. **配乐**：在 `scripts/make_audio.py` 里加一个 `score_<slug>()` 编排函数并登记到 `SCORES`，用 `--slug=<slug>` 运行；节拍点从 `timeline.json` 读取，画面改了时长重跑一次即可对齐。
+6. **旁白**：写 `narration.json`，`python3 -I scripts/voiceover.py check --slug=<slug>` 估算，再 `generate --slug=<slug>`。
+7. **检查**：先用 `scripts/still.mjs` 导几帧看排版，再整片渲染；定稿复制到 `exports/`（或在 `scripts/produce.sh` 登记后一键出片）。
 
 竖版（1080×1920）：在 `Root.tsx` 用同一个组件再注册一个宽高对调的 Composition，场景里用 `useLayout()` 的 `pick(横版值, 竖版值)` 给出竖版位置。竖版要给平台界面留位置：顶部约 200px、底部约 300px、右侧按钮栏。
 

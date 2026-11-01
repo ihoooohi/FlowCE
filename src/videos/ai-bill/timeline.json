@@ -1,0 +1,15 @@
+{
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "comment": "《AI 的账单》时间轴。dur/overlap/beats 单位为帧（30fps），beats 为场景内相对帧。画面、配乐、旁白共用。",
+  "scenes": [
+    { "id": "cold", "dur": 300, "overlap": 0, "fadeIn": 0, "fadeOut": 14, "beats": { "tag": 8, "s1": 40, "s2": 95, "s3": 150, "dim": 252 } },
+    { "id": "scope", "dur": 300, "overlap": 10, "fadeIn": 10, "fadeOut": 14, "beats": { "title": 6, "titleOut": 96, "scope": 112, "cap": 205 } },
+    { "id": "earnings", "dur": 420, "overlap": 10, "fadeIn": 10, "fadeOut": 14, "beats": { "c1": 70, "c2": 140, "red": 205, "c3": 235, "red3": 290 } },
+    { "id": "cash", "dur": 540, "overlap": 10, "fadeIn": 10, "fadeOut": 14, "beats": { "wf": 90, "amzn": 250, "fund": 365, "stamp": 470 } },
+    { "id": "bill", "dur": 480, "overlap": 10, "fadeIn": 10, "fadeOut": 14, "beats": { "towers": 25, "goldman": 110, "money": 240, "oil": 290, "fed": 350 } },
+    { "id": "camps", "dur": 300, "overlap": 10, "fadeIn": 10, "fadeOut": 14, "beats": { "bull": 70, "bear": 135 } },
+    { "id": "long", "dur": 420, "overlap": 10, "fadeIn": 10, "fadeOut": 30, "beats": { "bars": 20, "line": 125, "end": 215 } }
+  ]
+}
