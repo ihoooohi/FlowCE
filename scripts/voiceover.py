@@ -327,8 +327,12 @@ def cmd_samples() -> None:
 
 def cmd_generate() -> None:
     nar = load_json(NARRATION)
-    voice = resolve_voice(nar)
     old = {l["id"]: l for l in load_json(MANIFEST).get("lines", [])} if MANIFEST.exists() else {}
+    # 全部命中缓存（只改了 at / 时间轴）时不连 MiniMax，直接刷新时间表
+    voice = dict(nar["voice"])
+    cached = lambda c: old.get(c["id"], {}).get("hash") == line_hash(c.get("say", c["text"]), voice) and (VO_DIR / f"{c['id']}.mp3").exists()
+    if FLAGS.get("--force") or not all(cached(c) for c in cues()):
+        voice = resolve_voice(nar)
     VO_DIR.mkdir(parents=True, exist_ok=True)
     items = []
     for c in cues():

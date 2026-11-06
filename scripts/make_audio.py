@@ -530,6 +530,97 @@ def score_ai_bill() -> None:
     add(e + 1.0, bell(mtof(84), 6), gain=0.07, send=0.8)
 
 
+def score_ai_pause() -> None:
+    """《AI 的暂停键》：短、紧、重击多；开场两记重击，中段推进，结尾回到温暖的大调"""
+    # 1. 开场：0 秒就有低频，"三万亿"一记重击，"没了"一记更重的下坠
+    s = "hook"
+    pad(start(s), CH["Dark"], end(s) - start(s) + 0.3, gain=0.07, bright=1.3, attack=0.2, release=0.6, send=0.3)
+    add(at(s, "num"), sub_boom(2.2, 110, 34), gain=0.45, send=0.25)
+    for m in (38, 45, 50):
+        add(at(s, "num"), piano(mtof(m), 3, 1.8), gain=0.10, send=0.4)
+    add(at(s, "gone"), sub_boom(2.6, 90, 28), gain=0.55, send=0.25)
+    add(at(s, "gone"), fall(1.4, 1200, 60), gain=0.12, send=0.4)
+    add(at(s, "gone"), noise_swell(1.4, 2600, 200, rise=False), gain=0.10, send=0.5)
+    t, k = at(s, "date"), 0
+    while t < end(s) - 0.3:
+        add(t, tick(k % 2 == 0), pan=0.15 if k % 2 else -0.15, gain=0.22, send=0.15)
+        t += 0.5
+        k += 1
+    add(end(s) - 1.6, riser(1.7, 200, 1800), gain=0.09, send=0.35)
+
+    # 2. 过山车：涨时明亮上行，跌时下坠 + 重击
+    s = "coaster"
+    progression(start(s), at(s, "down"), ["F", "C", "Dm", "Bb"], gain=0.042, bright=2.6)
+    arpeggio(at(s, "up"), at(s, "down") - 0.2, ["F", "C", "Dm", "Bb"], rate=0.16, gain=0.034, pattern=(1, 2, 3, 4, 5, 4))
+    for i, m in enumerate([72, 76, 79, 84]):
+        add(at(s, "up") + i * 0.12, bell(mtof(m), 3), pan=-0.3 + 0.2 * i, gain=0.07, send=0.6)
+    d = at(s, "down")
+    add(d, fall(1.2, 1400, 80), gain=0.12, send=0.4)
+    add(d + 1.0, sub_boom(2.4, 100, 30), gain=0.5, send=0.25)
+    pad(d, CH["Dark"], end(s) - d + 0.5, gain=0.055, bright=1.4, attack=0.3, release=0.8, send=0.5)
+    t = d + 1.0
+    while t < end(s):
+        add(t, thump(), gain=0.24, send=0.05)
+        t += 0.6
+    add(at(s, "net"), piano(mtof(38), 3, 1.6), gain=0.16, send=0.4)
+    add(at(s, "net"), piano(mtof(44), 3, 1.6), gain=0.12, send=0.4)
+
+    # 3. 成绩单：每块砸下来一声低音，英伟达最重
+    s = "board"
+    pad(start(s), CH["Dm"], end(s) - start(s) + 0.4, gain=0.04, bright=1.6, attack=0.2, release=0.8, send=0.5)
+    t = start(s)
+    while t < end(s):
+        add(t, thump(), gain=0.2, send=0.05)
+        t += 0.45
+    for i, b in enumerate(("t1", "t2", "t3", "t4")):
+        add(at(s, b), sub_boom(1.6, 100 - 6 * i, 34), gain=0.26 + (0.2 if b == "t4" else 0.04 * i), send=0.3)
+        add(at(s, b), tick(True), gain=0.2, send=0.2)
+    add(at(s, "zero"), bell(mtof(57), 4), gain=0.1, send=0.7)
+
+    # 4. 为什么：推进的分解和弦 + 鼓点；瑞银数字前一个上升音
+    s = "why"
+    progression(start(s), at(s, "ubs"), ["Dm", "Bb", "Gm", "A"], gain=0.042, bright=2.2)
+    arpeggio(start(s) + 0.3, at(s, "ubs"), ["Dm", "Bb", "Gm", "A"], rate=0.18, gain=0.034, pattern=(1, 3, 2, 4, 3, 2, 4, 3))
+    t = start(s)
+    while t < at(s, "ubs"):
+        add(t, thump(), gain=0.2, send=0.05)
+        t += 0.36
+    for b, m in (("n1", 79), ("n2", 81), ("n3", 84), ("n4", 86)):
+        add(at(s, b), bell(mtof(m), 3.5), gain=0.08, send=0.7)
+    add(at(s, "n4"), sub_boom(1.6, 90, 36), gain=0.3, send=0.3)
+    u = at(s, "ubs")
+    pad(u, CH["Dark"], end(s) - u + 0.6, gain=0.05, bright=1.4, attack=0.4, release=1.0, send=0.5)
+    add(at(s, "big") - 2.0, riser(2.0, 220, 2200), gain=0.10, send=0.35)
+    add(at(s, "big"), sub_boom(2.2, 110, 32), gain=0.45, send=0.25)
+    t = at(s, "big")
+    while t < end(s):
+        add(t, thump(), gain=0.22, send=0.05)
+        add(t + 0.22, thump(), gain=0.14, send=0.05)
+        t += 0.9
+
+    # 5. 位置：跌穿回调线一记重击；回扣上期时两声钟
+    s = "corr"
+    pad(start(s), CH["Dark"], at(s, "cb") - start(s) + 0.6, gain=0.05, bright=1.3, attack=0.4, release=1.0, send=0.5)
+    add(at(s, "fill"), fall(at(s, "cross") - at(s, "fill") + 0.5, 700, 90), gain=0.07, send=0.4)
+    add(at(s, "cross"), sub_boom(2.0, 100, 30), gain=0.42, send=0.25)
+    add(at(s, "stamp"), sub_boom(1.4, 130, 40), gain=0.36, send=0.2)
+    add(at(s, "stamp"), noise_swell(0.8, 3000, 400, rise=False), gain=0.10, send=0.3)
+    progression(at(s, "cb"), end(s) + 0.4, ["Bb", "Gm", "A"], gain=0.045, bright=2.0)
+    add(at(s, "cb"), bell(mtof(74), 4), gain=0.1, send=0.7)
+    add(at(s, "cb2"), bell(mtof(69), 4), gain=0.1, send=0.7)
+    add(at(s, "cb2"), sub_boom(1.6, 80, 34), gain=0.22, send=0.4)
+
+    # 6. 结尾：温暖的大调；两个选项各一声，关注时一声亮钟
+    s = "end"
+    progression(start(s), end(s) - 0.5, ["F/A", "Bb", "C"], gain=0.05, bright=2.6)
+    add(at(s, "a"), bell(mtof(77), 3), pan=-0.4, gain=0.08, send=0.6)
+    add(at(s, "b"), bell(mtof(81), 3), pan=0.4, gain=0.08, send=0.6)
+    f = at(s, "follow")
+    add(f, bell(mtof(84), 4), gain=0.1, send=0.7)
+    pad(f, CH["F"] + [65, 69], end(s) - f + 3.0, gain=0.05, bright=2.8, attack=0.3, release=3.5, send=0.9)
+    add(f + 0.4, bell(mtof(89), 5), gain=0.06, send=0.8)
+
+
 # --------------------------------------------------------------------------
 # 混音
 # --------------------------------------------------------------------------
@@ -642,7 +733,7 @@ def encode(wav: Path, out: Path, mix: np.ndarray) -> None:
     print(f"{out.relative_to(ROOT)}：响度 {measure_lufs(mix):.1f} LUFS，峰值 {20 * np.log10(np.max(np.abs(mix))):.1f} dBFS")
 
 
-SCORES = {"tech-cycles": score_tech_cycles, "ai-bill": score_ai_bill}
+SCORES = {"tech-cycles": score_tech_cycles, "ai-bill": score_ai_bill, "ai-pause": score_ai_pause}
 
 
 def main() -> None:

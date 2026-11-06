@@ -1,0 +1,18 @@
+{
+  "fps": 30,
+  "comment": "《AI 的暂停键》时间轴：按旁白实测时长排布（旁白节拍见 narration.json）。",
+  "scenes": [
+    { "id": "hook", "dur": 225, "overlap": 0, "fadeIn": 0, "fadeOut": 8,
+      "beats": { "tag": 0, "day": 10, "num": 30, "gone": 58, "date": 96, "worst": 150 } },
+    { "id": "coaster", "dur": 400, "overlap": 6, "fadeIn": 6, "fadeOut": 8,
+      "beats": { "head": 4, "up": 96, "upNote": 160, "down": 262, "downNote": 300, "net": 340 } },
+    { "id": "board", "dur": 285, "overlap": 6, "fadeIn": 6, "fadeOut": 8,
+      "beats": { "head": 4, "t1": 16, "t2": 56, "t3": 100, "t4": 166, "zero": 220, "foot": 250 } },
+    { "id": "why", "dur": 640, "overlap": 6, "fadeIn": 6, "fadeOut": 8,
+      "beats": { "head": 4, "n1": 98, "n2": 150, "n3": 292, "n4": 340, "ubs": 400, "big": 470, "grid": 520 } },
+    { "id": "corr", "dur": 375, "overlap": 6, "fadeIn": 6, "fadeOut": 8,
+      "beats": { "head": 4, "fill": 40, "cross": 116, "stamp": 132, "cb": 180, "cb2": 262 } },
+    { "id": "end", "dur": 330, "overlap": 6, "fadeIn": 6, "fadeOut": 20,
+      "beats": { "q": 8, "a": 40, "b": 70, "comment": 104, "follow": 160, "foot": 240 } }
+  ]
+}

@@ -17,6 +17,7 @@ done
 case "$SLUG" in
   tech-cycles) TARGETS="TechCycles:tech-cycles TechCyclesVertical:tech-cycles-vertical" ;;
   ai-bill) TARGETS="AIBill:ai-bill" ;;
+  ai-pause) TARGETS="AIPauseVertical:ai-pause-vertical AIPause:ai-pause" ;;
   *) echo "未知视频：$SLUG（在 scripts/produce.sh 里登记）"; exit 1 ;;
 esac
 

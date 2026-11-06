@@ -1,0 +1,146 @@
+{
+ "comment": "由 scripts/voiceover.py 生成，请勿手改。",
+ "fps": 30,
+ "lines": [
+  {
+   "id": "01-hook",
+   "file": "ai-pause/vo/01-hook.mp3",
+   "frame": 4,
+   "lead": 0.268,
+   "speech": 1.975,
+   "duration": 2.554,
+   "text": "一天，三万亿美元，没了。",
+   "hash": "511ee574ad36"
+  },
+  {
+   "id": "02-worst",
+   "file": "ai-pause/vo/02-worst.mp3",
+   "frame": 80,
+   "lead": 0.34,
+   "speech": 4.098,
+   "duration": 4.8,
+   "text": "11月5日，美股遭遇2025年4月以来最惨的一天。",
+   "hash": "ef720b463e52"
+  },
+  {
+   "id": "03-up",
+   "file": "ai-pause/vo/03-up.mp3",
+   "frame": 225,
+   "lead": 0.42,
+   "speech": 7.049,
+   "duration": 7.8,
+   "text": "最魔幻的是，就在前一天，道指刚大涨1569点，是44年来中期选举后最好的一天。",
+   "hash": "647df8da2534"
+  },
+  {
+   "id": "04-down",
+   "file": "ai-pause/vo/04-down.mp3",
+   "frame": 459,
+   "lead": 0.352,
+   "speech": 4.562,
+   "duration": 5.3,
+   "text": "24小时后，道指暴跌1833点，涨幅全部吐回。",
+   "hash": "54a7137c7428"
+  },
+  {
+   "id": "05-board",
+   "file": "ai-pause/vo/05-board.mp3",
+   "frame": 619,
+   "lead": 0.334,
+   "speech": 4.409,
+   "duration": 5.1,
+   "text": "纳指跌5.5%，标普跌4.4%，芯片股跌了一成。",
+   "hash": "009853adc6c9"
+  },
+  {
+   "id": "06-nvda",
+   "file": "ai-pause/vo/06-nvda.mp3",
+   "frame": 771,
+   "lead": 0.355,
+   "speech": 3.182,
+   "duration": 3.9,
+   "text": "英伟达一天跌9%，今年的涨幅全部清零。",
+   "hash": "fc665c6618bb"
+  },
+  {
+   "id": "07-why",
+   "file": "ai-pause/vo/07-why.mp3",
+   "frame": 898,
+   "lead": 0.32,
+   "speech": 2.078,
+   "duration": 2.798,
+   "text": "导火索，是前天的中期选举。",
+   "hash": "66ee35c8239b"
+  },
+  {
+   "id": "08-vote",
+   "file": "ai-pause/vo/08-vote.mp3",
+   "frame": 978,
+   "lead": 0.346,
+   "speech": 5.005,
+   "duration": 5.7,
+   "text": "民主党拿下国会；德州、俄亥俄的新州长，都主张给新建数据中心踩刹车。",
+   "hash": "76e6b8d73065"
+  },
+  {
+   "id": "09-math",
+   "file": "ai-pause/vo/09-math.mp3",
+   "frame": 1148,
+   "lead": 0.356,
+   "speech": 3.991,
+   "duration": 4.7,
+   "text": "市场立刻算了一笔账：数据中心不建了，芯片卖给谁？",
+   "hash": "2ab01d2bf517"
+  },
+  {
+   "id": "10-ubs",
+   "file": "ai-pause/vo/10-ubs.mp3",
+   "frame": 1288,
+   "lead": 0.385,
+   "speech": 7.101,
+   "duration": 7.8,
+   "text": "瑞银估计，如果暂停蔓延，2028年要上线的美国新数据中心，近三分之一可能延后甚至落空。",
+   "hash": "703959167d85"
+  },
+  {
+   "id": "11-corr",
+   "file": "ai-pause/vo/11-corr.mp3",
+   "frame": 1532,
+   "lead": 0.353,
+   "speech": 5.021,
+   "duration": 5.8,
+   "text": "纳指从10月高点算，已经跌了将近12%，正式进入技术性回调。",
+   "hash": "80570b5f26f1"
+  },
+  {
+   "id": "12-callback",
+   "file": "ai-pause/vo/12-callback.mp3",
+   "frame": 1706,
+   "lead": 0.417,
+   "speech": 5.573,
+   "duration": 6.4,
+   "text": "上期我们说，AI的账单越来越贵；这一次，连建设本身都可能被按下暂停键。",
+   "hash": "596755bf3509"
+  },
+  {
+   "id": "13-ask",
+   "file": "ai-pause/vo/13-ask.mp3",
+   "frame": 1901,
+   "lead": 0.355,
+   "speech": 4.249,
+   "duration": 5.0,
+   "text": "这是一次错杀，还是AI行情的转折点？评论区说说你的判断。",
+   "hash": "0a8bb73554dd"
+  },
+  {
+   "id": "14-follow",
+   "file": "ai-pause/vo/14-follow.mp3",
+   "frame": 2051,
+   "lead": 0.254,
+   "speech": 4.505,
+   "duration": 5.074,
+   "text": "关注我，下次大跌第一时间帮你拆解。以上不构成投资建议。",
+   "hash": "c960c1a00fdb"
+  }
+ ]
+}
